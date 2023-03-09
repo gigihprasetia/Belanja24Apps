@@ -24,6 +24,8 @@ import {
 } from '../Assets/API/getAPI';
 import CardProduct from '../Component/CardProduct';
 import {useSelector} from 'react-redux';
+import {useCallback} from 'react';
+import {getFromRedux} from '../Assets/API/GetRedux';
 
 const ScreenDashboard = props => {
   const [dataPopular, setDataPopular] = useState({
@@ -38,28 +40,31 @@ const ScreenDashboard = props => {
     status: false,
     data: [],
   });
+
+  const [muatbanyakLoading, setMuatBanyakLoading] = useState(false);
   const {navigation} = props;
+  const token = useCallback(getFromRedux('token'), []);
 
   const {
     Authentication: {isUser},
   } = useSelector(state => state);
 
   useEffect(() => {
-    getPopularProduct('', val => {
+    getPopularProduct(token, val => {
       setDataPopular({
         status: true,
         data: val.data.data,
       });
     });
 
-    getPopularStore('', val => {
+    getPopularStore(token, val => {
       setDataPopularStore({
         status: true,
         data: val.data.data,
       });
     });
 
-    getMostLikeProduct('', val => {
+    getMostLikeProduct(token, '', val => {
       setDataMostLikeProduct({
         status: true,
         data: val.data.data,
@@ -68,14 +73,16 @@ const ScreenDashboard = props => {
   }, []);
 
   const LoadMoreProduct = () => {
+    setMuatBanyakLoading(true);
     if (dataMostLikeProduct.data.length === 0) {
       alert('data empty');
     } else {
       const lastData =
         dataMostLikeProduct.data[dataMostLikeProduct.data.length - 1]
           .created_at;
-      console.log(lastData.replace(' ', '%20'));
-      getMostLikeProduct('', lastData, val => {
+      // console.log(lastData.replace(' ', '%20'));
+      getMostLikeProduct(token, lastData, val => {
+        setMuatBanyakLoading(false);
         setDataMostLikeProduct({
           status: true,
           data: [...dataMostLikeProduct.data, ...val.data.data],
@@ -358,14 +365,18 @@ const ScreenDashboard = props => {
                   backgroundColor: blueB2C,
                   borderRadius: 5,
                 }}>
-                <Text
-                  style={{
-                    fontSize: adjust(11),
-                    color: 'white',
-                    fontWeight: 'bold',
-                  }}>
-                  Muat Lebih Banyak
-                </Text>
+                {muatbanyakLoading ? (
+                  <ActivityIndicator color={'white'} size={adjust(10)} />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: adjust(11),
+                      color: 'white',
+                      fontWeight: 'bold',
+                    }}>
+                    Muat Lebih Banyak
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           );

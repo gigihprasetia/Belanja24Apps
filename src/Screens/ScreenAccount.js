@@ -32,7 +32,7 @@ import {getProfile} from '../Assets/API/getAPI';
 const ScreenAccount = props => {
   const [screenView, setScreenView] = useState('login');
   const isToken = useSelector(state => state.Authentication.isLogin.token);
-  const [isUpdate, setIsUpdate] = useState(false);
+
   const {navigation} = props;
   const [dataUser, setDataUser] = useState({
     ava: '',
@@ -50,8 +50,7 @@ const ScreenAccount = props => {
         phone: profile.phone,
       });
     });
-  }, [isUpdate]);
-  // console.log(dataUser);
+  }, [isToken != '']);
 
   return isToken != '' ? (
     <SafeAreaView

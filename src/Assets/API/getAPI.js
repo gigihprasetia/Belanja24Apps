@@ -1,3 +1,4 @@
+import {useSelector} from 'react-redux';
 import API from './API';
 
 export const getPopularProduct = async (token = '', callback) => {
@@ -26,6 +27,7 @@ export const getPopularStore = async (token = '', callback) => {
     .catch(err => console.log(err));
 };
 export const getMostLikeProduct = async (token = '', load = '', callback) => {
+  console.log(token);
   await API.get('/guest-sys/fade/browse-product', {
     params: {pointer: load, provider_type: 'ECOMMERCE'},
     headers: {

@@ -16,6 +16,8 @@ import {useState} from 'react';
 import {
   adjust,
   blueB2C,
+  formatter,
+  Gray,
   GrayMedium,
   Green,
   HeightScreen,
@@ -25,6 +27,10 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import CardProduct from '../Component/CardProduct';
 import LoadingPage from '../Component/LoadingPage';
 import ModalComponent from '../Component/ModalComponent';
+import {useSelector} from 'react-redux';
+import {getFromRedux} from '../Assets/API/GetRedux';
+import {useMemo} from 'react';
+import {useCallback} from 'react';
 
 export default function ScreenDetailBarang(props) {
   const [detailBarang, setDetailBarang] = useState({
@@ -32,10 +38,18 @@ export default function ScreenDetailBarang(props) {
     data: null,
   });
 
+  const {navigation} = props;
   const [relatedProduct, setRelatedProduct] = useState({
     isLoading: true,
     data: null,
   });
+
+  const [calculateItemCart, setCalculateItemCart] = useState({
+    price: '',
+    stock: 0,
+    qty: 1,
+  });
+
   // https://api.belanja24.com/api/v1/guest-sys/fade/detail-product/projection-screen-smr-300225q-63f46cd3e7bff
 
   const {
@@ -43,26 +57,28 @@ export default function ScreenDetailBarang(props) {
       params: {slug},
     },
   } = props;
-  // console.log(props, 'kakak');
+
   const {
     route: {
       params: {id},
     },
   } = props;
-
-  const {navigation} = props;
-
-  // console.log(id);
+  const token = useCallback(getFromRedux('token'), []);
 
   useEffect(() => {
-    getDetailProduct('', slug, barang => {
+    getDetailProduct(token, slug, barang => {
       setDetailBarang({
         isLoading: false,
         data: barang.data.data,
       });
+      setCalculateItemCart({
+        ...calculateItemCart,
+        price: barang.data.data.price,
+        stock: barang.data.data.stock,
+      });
     });
 
-    getRelatedProduct('', slug, related =>
+    getRelatedProduct(token, slug, related =>
       setRelatedProduct({
         isLoading: false,
         data: related.data.data,
@@ -71,6 +87,13 @@ export default function ScreenDetailBarang(props) {
   }, []);
 
   // console.log(detailBarang.data);
+
+  const calculateStock = useMemo(() => {
+    return calculateItemCart.stock - calculateItemCart.qty;
+  }, [calculateItemCart.qty, calculateItemCart.stock]);
+  const calculatePrice = useMemo(() => {
+    return parseInt(calculateItemCart.price) * calculateItemCart.qty;
+  }, [calculateItemCart.price, calculateItemCart.qty]);
 
   return detailBarang.isLoading ||
     (detailBarang.data === null && relatedProduct.isLoading) ||
@@ -282,7 +305,56 @@ export default function ScreenDetailBarang(props) {
           alignItems: 'center',
         }}
         ContentCustoms={({close}) => {
-          return (
+          return token === '' ? (
+            <View
+              style={{
+                padding: adjust(10),
+                backgroundColor: 'white',
+                width: WidthScreen * 0.8,
+                borderRadius: adjust(5),
+              }}>
+              <Text
+                style={{
+                  fontSize: adjust(12),
+                  fontWeight: 'bold',
+                  color: GrayMedium,
+                  marginBottom: adjust(10),
+                }}>
+                Login Untuk Mulai Berbelanja?
+              </Text>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <TouchableOpacity
+                  onPress={close}
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: 'red',
+                    padding: adjust(5),
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginRight: adjust(2),
+                  }}>
+                  <Text style={{fontSize: adjust(10), color: 'red'}}>
+                    Cencel
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Account')}
+                  style={{
+                    flex: 1,
+                    backgroundColor: blueB2C,
+                    padding: adjust(5),
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginLeft: adjust(2),
+                  }}>
+                  <Text style={{fontSize: adjust(10), color: 'white'}}>
+                    Ke Menu Login
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
             <View
               style={{
                 padding: adjust(10),
@@ -320,14 +392,14 @@ export default function ScreenDetailBarang(props) {
                     color: 'black',
                     fontSize: adjust(13),
                   }}>
-                  {detailBarang.data.price_b}
+                  {formatter(calculatePrice)}
                 </Text>
                 <Text
                   style={{
                     color: GrayMedium,
                     fontSize: adjust(10),
                   }}>
-                  stock {detailBarang.data.stock}
+                  stock {calculateStock}
                 </Text>
               </View>
 
@@ -351,6 +423,15 @@ export default function ScreenDetailBarang(props) {
                     flex: 1,
                   }}>
                   <Pressable
+                    onPress={() => {
+                      if (calculateItemCart.qty === 1) {
+                      } else {
+                        setCalculateItemCart({
+                          ...calculateItemCart,
+                          qty: calculateItemCart.qty - 1,
+                        });
+                      }
+                    }}
                     style={{
                       backgroundColor: 'red',
                       paddingVertical: adjust(5),
@@ -376,10 +457,19 @@ export default function ScreenDetailBarang(props) {
                         color: 'black',
                         fontSize: adjust(10),
                       }}>
-                      1
+                      {calculateItemCart.qty}
                     </Text>
                   </View>
                   <Pressable
+                    onPress={() => {
+                      if (calculateItemCart.stock === calculateItemCart.qty) {
+                      } else {
+                        setCalculateItemCart({
+                          ...calculateItemCart,
+                          qty: calculateItemCart.qty + 1,
+                        });
+                      }
+                    }}
                     style={{
                       backgroundColor: blueB2C,
                       paddingVertical: adjust(5),
