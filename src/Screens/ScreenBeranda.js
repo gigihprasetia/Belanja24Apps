@@ -40,8 +40,8 @@ const ScreenDashboard = props => {
   });
   const {navigation} = props;
 
-  const ancok = useSelector(state => state);
-  // console.log(ancok, 'state');
+  const {Authentication:{isUser}} = useSelector(state => state);
+
 
   useEffect(() => {
     getPopularProduct(val => {

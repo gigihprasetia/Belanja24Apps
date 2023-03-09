@@ -39,3 +39,22 @@ export const getRelatedProduct = async (product_id, callback) => {
     .then(related => callback(related))
     .catch(err => console.log(err));
 };
+
+export const validate = async (token = '', callback) => {
+  await API.get(`/token/validate`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(validate => callback(validate))
+    .catch(err => console.log(err));
+};
+export const getProfile = async (token = '', callback) => {
+  await API.get(`/customer-sys/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(profile => callback(profile.data.data))
+    .catch(err => console.log(err));
+};
