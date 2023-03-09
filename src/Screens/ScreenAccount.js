@@ -321,7 +321,9 @@ const ScreenAccount = props => {
             fontWeight: 'bold',
             color: blueB2C,
           }}>
-          Masuk Ke Akun Anda
+          {screenView === 'login'
+            ? 'Login Ke Akun Anda'
+            : 'Daftarkan Akun Anda'}
         </Text>
         <Text
           style={{

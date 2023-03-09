@@ -55,14 +55,14 @@ export default function ScreenDetailBarang(props) {
   // console.log(id);
 
   useEffect(() => {
-    getDetailProduct(slug, barang => {
+    getDetailProduct('', slug, barang => {
       setDetailBarang({
         isLoading: false,
         data: barang.data.data,
       });
     });
 
-    getRelatedProduct(slug, related =>
+    getRelatedProduct('', slug, related =>
       setRelatedProduct({
         isLoading: false,
         data: related.data.data,

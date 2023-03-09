@@ -1,8 +1,11 @@
 import API from './API';
 
-export const getPopularProduct = async callback => {
+export const getPopularProduct = async (token = '', callback) => {
   await API.get('/guest-sys/fade/popular-product', {
     params: {provider_type: 'ECOMMERCE'},
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then(product => {
       // console.log(product);
@@ -10,16 +13,24 @@ export const getPopularProduct = async callback => {
     })
     .catch(err => console.log(err));
 };
-export const getPopularStore = async callback => {
+export const getPopularStore = async (token = '', callback) => {
   await API.get('/guest-sys/fade/featured-provider', {
     params: {provider_type: 'ECOMMERCE'},
+    headers: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
   })
     .then(store => callback(store))
     .catch(err => console.log(err));
 };
-export const getMostLikeProduct = async (load = '', callback) => {
+export const getMostLikeProduct = async (token = '', load = '', callback) => {
   await API.get('/guest-sys/fade/browse-product', {
     params: {pointer: load, provider_type: 'ECOMMERCE'},
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then(store => {
       // console.log(store);
@@ -27,14 +38,21 @@ export const getMostLikeProduct = async (load = '', callback) => {
     })
     .catch(err => console.log(err));
 };
-export const getDetailProduct = async (slug, callback) => {
-  await API.get(`/guest-sys/fade/detail-product/${slug}`)
+export const getDetailProduct = async (token = '', slug, callback) => {
+  await API.get(`/guest-sys/fade/detail-product/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
     .then(detail => callback(detail))
     .catch(err => console.log(err));
 };
-export const getRelatedProduct = async (product_id, callback) => {
+export const getRelatedProduct = async (token = '', product_id, callback) => {
   await API.get(`/guest-sys/fade/related-product`, {
     params: {product_id},
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
     .then(related => callback(related))
     .catch(err => console.log(err));

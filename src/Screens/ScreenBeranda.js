@@ -40,18 +40,19 @@ const ScreenDashboard = props => {
   });
   const {navigation} = props;
 
-  const {Authentication:{isUser}} = useSelector(state => state);
-
+  const {
+    Authentication: {isUser},
+  } = useSelector(state => state);
 
   useEffect(() => {
-    getPopularProduct(val => {
+    getPopularProduct('', val => {
       setDataPopular({
         status: true,
         data: val.data.data,
       });
     });
 
-    getPopularStore(val => {
+    getPopularStore('', val => {
       setDataPopularStore({
         status: true,
         data: val.data.data,
@@ -74,7 +75,7 @@ const ScreenDashboard = props => {
         dataMostLikeProduct.data[dataMostLikeProduct.data.length - 1]
           .created_at;
       console.log(lastData.replace(' ', '%20'));
-      getMostLikeProduct(lastData, val => {
+      getMostLikeProduct('', lastData, val => {
         setDataMostLikeProduct({
           status: true,
           data: [...dataMostLikeProduct.data, ...val.data.data],
