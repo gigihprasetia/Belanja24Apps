@@ -8,6 +8,7 @@ export const inquiryBasic = async callback => {
     })
     .catch(err => console.log(err));
 };
+
 export const UpdateProfile = async (token = '', data, callback) => {
   //   console.log(data);
   await API.post('/customer-sys/profile', data, {
@@ -21,6 +22,18 @@ export const UpdateProfile = async (token = '', data, callback) => {
     .catch(err => {
       callback({status: false, response: err.response.data.message});
     });
+};
+
+export const addToCart = async (token = '', data, callback) => {
+  await API.post('/customer-sys/buy-process/cart/add', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => callback(false));
 };
 
 /////AUTHENTICATION///////////

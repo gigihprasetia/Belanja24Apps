@@ -78,3 +78,12 @@ export const getProfile = async (token = '', callback) => {
     .then(profile => callback(profile.data.data))
     .catch(err => console.log(err));
 };
+export const getDataCart = async (token = '', callback) => {
+  await API.get(`/customer-sys/buy-process/cart/index`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(profile => callback(profile.data.data))
+    .catch(err => console.log(err));
+};

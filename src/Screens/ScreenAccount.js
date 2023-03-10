@@ -194,7 +194,7 @@ const ScreenAccount = props => {
                 fontWeight: 'bold',
                 color: 'white',
               }}>
-              Perbarui Profile
+              Perbarui Profiles
             </Text>
           </TouchableOpacity>
         ) : (

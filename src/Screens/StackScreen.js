@@ -15,6 +15,7 @@ import {useMemo} from 'react';
 import {useCallback} from 'react';
 import {useEffect} from 'react';
 import {SvgUri} from 'react-native-svg';
+import ScreenKeranjang from './ScreenKeranjang';
 const Tab = createBottomTabNavigator();
 
 const StackScreen = () => {
@@ -133,7 +134,7 @@ const StackScreen = () => {
         <Tab.Screen
           options={{headerShown: false}}
           name="Keranjang"
-          component={ScreenAccount}
+          component={ScreenKeranjang}
         />
       )}
       {TokenUser != '' && (
