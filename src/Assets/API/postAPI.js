@@ -33,7 +33,57 @@ export const addToCart = async (token = '', data, callback) => {
     .then(response => {
       callback(response);
     })
-    .catch(err => callback(false));
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
+export const removeToCart = async (token = '', data, callback) => {
+  await API.post('/customer-sys/buy-process/cart/delete', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+export const beliSekarang = async (token = '', data, callback) => {
+  await API.post('/customer-sys/buy-process/shipping-confirm-inquiry', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+export const getCheckout = async (token = '', callback) => {
+  await API.post(
+    '/customer-sys/buy-process/shipping-confirm-products',
+    undefined,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
 };
 
 /////AUTHENTICATION///////////
