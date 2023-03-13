@@ -27,7 +27,6 @@ export const getPopularStore = async (token = '', callback) => {
     .catch(err => console.log(err));
 };
 export const getMostLikeProduct = async (token = '', load = '', callback) => {
-  console.log(token);
   await API.get('/guest-sys/fade/browse-product', {
     params: {pointer: load, provider_type: 'ECOMMERCE'},
     headers: {
@@ -76,5 +75,15 @@ export const getProfile = async (token = '', callback) => {
     },
   })
     .then(profile => callback(profile.data.data))
+    .catch(err => console.log(err));
+};
+
+export const getAddress = async (token = '', callback) => {
+  await API.get(`/customer-sys/profile/address`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback(res.data.data))
     .catch(err => console.log(err));
 };

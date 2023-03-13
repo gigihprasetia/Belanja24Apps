@@ -1,3 +1,4 @@
+import axios from 'axios';
 import API from './API';
 
 export const inquiryBasic = async callback => {
@@ -45,4 +46,50 @@ export const RegisterBasic = async (data, callback) => {
     .catch(err => {
       callback({status: false, response: err.response.data.data});
     });
+};
+
+export const postPostalCode = async (params, data) => {
+  await API.post('accessible/data-master/address-by-postal', params)
+    .then(res => {
+      if (res.data.message === 'Approved') {
+        data(res.data.data);
+      }
+      console.log();
+    })
+    .catch(err => console.log(err, 'error'));
+};
+
+export const postAddress = async (token = '', params, data) => {
+  await API.post('customer-sys/profile/address', params, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => console.log(res, 'res'))
+    .catch(err => console.log(err));
+};
+
+export const deleteAddress = async (token = '', params, data) => {
+  await API.delete(`customer-sys/profile/address/${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => console.log(res))
+    .catch(err => console.log(err, 'error'));
+};
+
+export const setPrimaryAddress = async (token = '', params, data) => {
+  // console.log(token, params);
+  await API.post(
+    `/customer-sys/profile/address/${params}/set-primary`,
+    undefined,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then(val => console.log(val))
+    .catch(err => console.log(err));
 };
