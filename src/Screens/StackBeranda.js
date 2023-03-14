@@ -19,11 +19,6 @@ const StackBeranda = () => {
         name="DetailBarang"
         component={ScreenDetailBarang}
       />
-      <Stack.Screen
-        // options={{headerShown: false}}
-        name="Checkout"
-        component={ScreenCheckout}
-      />
     </Stack.Navigator>
   );
 };

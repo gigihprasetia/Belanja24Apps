@@ -27,6 +27,7 @@ const ScreenKeranjang = ({navigation}) => {
   const [checklistProduct, setChecklistProduct] = useState([]);
   const token = getFromRedux('token');
   const isFocus = useIsFocused();
+
   useEffect(() => {
     getDataCart(token, value => {
       const data = value.map(val => {
@@ -43,6 +44,7 @@ const ScreenKeranjang = ({navigation}) => {
       });
     });
   }, [isFocus]);
+
   const incrementQty = (id, valQty) => {
     addToCart(token, {product_id: id, qty: valQty}, res => {
       // console.log(res);
@@ -81,11 +83,13 @@ const ScreenKeranjang = ({navigation}) => {
       });
     });
   };
+
   const DeleteCardItem = (product_id, cart_id) => {
     setDataCart({
       ...dataCart,
       status: false,
     });
+
     removeToCart(token, {product_id, cart_id}, res => {
       getDataCart(token, value => {
         const data = value.map(val => {
@@ -127,7 +131,7 @@ const ScreenKeranjang = ({navigation}) => {
     [checklistProduct],
   );
 
-  console.log(checklistProduct);
+  // console.log(checklistProduct);
 
   return dataCart.status ? (
     dataCart.data.length === 0 ? (

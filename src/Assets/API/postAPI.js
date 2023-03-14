@@ -131,6 +131,22 @@ export const postAddress = async (token = '', params, data) => {
     .then(res => data({data: [], status: false}))
     .catch(err => console.log(err));
 };
+export const CheckShipping = async (token = '', data, callback) => {
+  await API.post(
+    '/customer-sys/buy-process/shipping-confirm-check-price',
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then(res => callback(res))
+    .catch(err => {
+      console.log(err);
+      callback(err);
+    });
+};
 
 export const deleteAddress = async (token = '', params, data) => {
   await API.delete(`customer-sys/profile/address/${params}`, {
