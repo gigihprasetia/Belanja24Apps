@@ -7,6 +7,7 @@ import StackScreen from '../Screens/StackScreen';
 import ScreenDetailBarang from '../Screens/ScreenDetailBarang';
 import {adjust, blueB2C, HeightScreen, WidthScreen} from '../Assets/utils';
 import FontAwsome5 from 'react-native-vector-icons/FontAwesome5';
+import ScreenCheckout from '../Screens/ScreenCheckout';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -54,6 +55,11 @@ const Routes = () => {
           }}
           name="DetailBarang"
           component={ScreenDetailBarang}
+        />
+        <stack.Screen
+          // options={{headerShown: false}}
+          name="Checkout"
+          component={ScreenCheckout}
         />
       </stack.Navigator>
     </NavigationContainer>

@@ -31,6 +31,8 @@ import {useSelector} from 'react-redux';
 import {getFromRedux} from '../Assets/API/GetRedux';
 import {useMemo} from 'react';
 import {useCallback} from 'react';
+import {addToCart} from '../Assets/API/postAPI';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function ScreenDetailBarang(props) {
   const [detailBarang, setDetailBarang] = useState({
@@ -486,25 +488,137 @@ export default function ScreenDetailBarang(props) {
                 </View>
               </View>
               {/* BUTTON MASUKAN KERANJANG DAN BATAL */}
-              <TouchableOpacity
-                style={{
-                  borderWidth: 1,
-                  borderColor: blueB2C,
-                  borderRadius: adjust(5),
-                  marginTop: adjust(15),
+              <ModalComponent
+                ButtonCustoms={props => {
+                  const SubModal = props.open;
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        addToCart(
+                          token,
+                          {
+                            product_id: detailBarang.data.id,
+                            qty: calculateItemCart.qty,
+                          },
+                          response => {
+                            if (!response) {
+                              alert('terjadi kesalahan');
+                            } else {
+                              SubModal();
+                            }
+                          },
+                        );
+                      }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: blueB2C,
+                        borderRadius: adjust(5),
+                        marginTop: adjust(15),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingVertical: adjust(5),
+                      }}>
+                      <Text
+                        style={{
+                          color: blueB2C,
+                          fontWeight: 'bold',
+                          fontSize: adjust(10),
+                        }}>
+                        + Keranjang
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+                isTransparent={true}
+                ContainerStyleContent={{
+                  flex: 1,
+                  backgroundColor: 'rgba(0,0,0,0.5)',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  paddingVertical: adjust(5),
-                }}>
-                <Text
-                  style={{
-                    color: blueB2C,
-                    fontWeight: 'bold',
-                    fontSize: adjust(10),
-                  }}>
-                  + Keranjang
-                </Text>
-              </TouchableOpacity>
+                  // backgroundColor: 'red',
+                }}
+                ContentCustoms={props => {
+                  const subClose = props.close;
+                  return (
+                    <View
+                      style={{
+                        backgroundColor: 'white',
+                        width: WidthScreen * 0.8,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: adjust(5),
+                        borderRadius: adjust(5),
+                      }}>
+                      <MaterialIcons
+                        name="add-shopping-cart"
+                        size={adjust(40)}
+                        color={Green}
+                      />
+                      <Text
+                        style={{
+                          color: GrayMedium,
+                          fontWeight: 'bold',
+                          fontSize: adjust(10),
+                          marginVertical: adjust(10),
+                        }}>
+                        Product Berhasil Dimasukan Ke Dalam Keranjang
+                      </Text>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          // justifyContent: 'space-between',
+                        }}>
+                        <TouchableOpacity
+                          onPress={() => subClose()}
+                          style={{
+                            flex: 1,
+                            borderWidth: 1,
+                            borderColor: 'red',
+                            padding: adjust(1),
+                            borderRadius: adjust(5),
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginRight: adjust(2),
+                          }}>
+                          <Text
+                            style={{
+                              color: 'red',
+
+                              fontSize: adjust(10),
+                              marginVertical: adjust(10),
+                            }}>
+                            Cencel
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate('Keranjang')}
+                          style={{
+                            flex: 1,
+                            borderWidth: 1,
+                            borderColor: Green,
+                            padding: adjust(1),
+                            borderRadius: adjust(5),
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginLeft: adjust(2),
+                          }}>
+                          <Text
+                            style={{
+                              color: Green,
+                              fontSize: adjust(10),
+                              marginVertical: adjust(10),
+                            }}>
+                            Lihat Keranjang
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  );
+                }}
+              />
+
               <TouchableOpacity
                 onPress={close}
                 style={{

@@ -1,4 +1,11 @@
-import {View, Text, Pressable, TouchableOpacity, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 import {adjust, blueB2C, GrayMedium} from '../Assets/utils';
 import {Formik} from 'formik';
@@ -13,6 +20,7 @@ import {validate} from '../Assets/API/getAPI';
 const LoginForm = ({gotoRegister, navigation}) => {
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
 
   return (
     <Formik
@@ -20,6 +28,7 @@ const LoginForm = ({gotoRegister, navigation}) => {
       validationSchema={LoginSchema}
       onSubmit={values => {
         DeviceInfo.getAndroidId().then(androidId => {
+          setIsLoadingLogin(true);
           inquiryBasic(response =>
             loginBasic(
               {
@@ -37,10 +46,12 @@ const LoginForm = ({gotoRegister, navigation}) => {
                   });
                   validate(res.response, valid => {
                     dispatch({type: 'setUser', data: valid.data.data});
+                    setIsLoadingLogin(false);
                     navigation.navigate('Beranda');
                   });
                 } else {
                   setMessage(res.response);
+                  setIsLoadingLogin(false);
                 }
               },
             ),
@@ -134,14 +145,18 @@ const LoginForm = ({gotoRegister, navigation}) => {
               marginTop: adjust(10),
               alignItems: 'center',
             }}>
-            <Text
-              style={{
-                fontSize: adjust(10),
-                fontWeight: 'bold',
-                color: 'white',
-              }}>
-              Sign In
-            </Text>
+            {isLoadingLogin ? (
+              <ActivityIndicator color={'white'} size={adjust(10)} />
+            ) : (
+              <Text
+                style={{
+                  fontSize: adjust(10),
+                  fontWeight: 'bold',
+                  color: 'white',
+                }}>
+                Sign In
+              </Text>
+            )}
           </TouchableOpacity>
           <View
             style={{
