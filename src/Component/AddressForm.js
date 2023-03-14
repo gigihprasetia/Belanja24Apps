@@ -25,6 +25,7 @@ const AddressForm = ({props}) => {
     province: '',
   });
   const [selectedValue, setSelectedValue] = React.useState('Rumah');
+
   return (
     <Formik
       initialValues={{
@@ -32,15 +33,19 @@ const AddressForm = ({props}) => {
         recipient_name: '',
       }}
       onSubmit={values =>
-        postAddress(token, {
-          address: values.address,
-          city: addres.city,
-          district: addres.district,
-          name: selectedValue,
-          postal_code: addres.postal_code,
-          province: addres.province,
-          recipient_name: values.recipient_name,
-        })
+        postAddress(
+          token,
+          {
+            address: values.address,
+            city: addres.city,
+            district: addres.district,
+            name: selectedValue,
+            postal_code: addres.postal_code,
+            province: addres.province,
+            recipient_name: values.recipient_name,
+          },
+          props.address,
+        )
       }>
       {({errors, touched, values, handleBlur, handleChange, handleSubmit}) => (
         <View
@@ -180,7 +185,6 @@ const AddressForm = ({props}) => {
               </View>
             )}
           </Formik>
-          {console.log(addres)}
           {addres.city === '' ? null : (
             <View
               style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
@@ -227,7 +231,7 @@ const AddressForm = ({props}) => {
               marginTop: adjust(10),
             }}>
             <TouchableOpacity
-              onPress={props.close}
+              onPress={props.close.close}
               style={{
                 flex: 1,
                 borderWidth: 1,

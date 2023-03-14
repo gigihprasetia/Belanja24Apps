@@ -93,7 +93,7 @@ export const getAddress = async (token = '', callback) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then(res => callback(res.data.data))
+    .then(res => callback({status: true, data: res.data.data}))
     .catch(err => console.log(err));
 };
 

@@ -128,7 +128,7 @@ export const postAddress = async (token = '', params, data) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then(res => console.log(res, 'res'))
+    .then(res => data({data: [], status: false}))
     .catch(err => console.log(err));
 };
 
@@ -138,12 +138,14 @@ export const deleteAddress = async (token = '', params, data) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then(res => console.log(res))
+    .then(res => {
+      data({data: [], status: false});
+    })
     .catch(err => console.log(err, 'error'));
 };
 
 export const setPrimaryAddress = async (token = '', params, data) => {
-  // console.log(token, params);
+  console.log(token, params);
   await API.post(
     `/customer-sys/profile/address/${params}/set-primary`,
     undefined,
@@ -153,6 +155,6 @@ export const setPrimaryAddress = async (token = '', params, data) => {
       },
     },
   )
-    .then(val => console.log(val))
+    .then(val => data({data: [], status: false}))
     .catch(err => console.log(err));
 };

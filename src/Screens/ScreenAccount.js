@@ -1,9 +1,7 @@
 import {
   View,
   Text,
-  Pressable,
   TextInput,
-  TextInputBase,
   FlatList,
   TouchableOpacity,
   Image,
@@ -25,8 +23,6 @@ import LoginForm from '../Component/LoginForm';
 import RegisterForm from '../Component/RegisterForm';
 import {useSelector} from 'react-redux';
 import {SvgUri} from 'react-native-svg';
-import {Formik} from 'formik';
-import {updateProfileSchema} from '../Assets/ValidationSchema';
 import {
   deleteAddress,
   setPrimaryAddress,
@@ -36,6 +32,7 @@ import {useEffect} from 'react';
 import {getAddress, getProfile} from '../Assets/API/getAPI';
 import ModalComponent from '../Component/ModalComponent';
 import AddressForm from '../Component/AddressForm';
+import LoadingPage from '../Component/LoadingPage';
 
 const ScreenAccount = props => {
   const [screenView, setScreenView] = useState('login');
@@ -49,7 +46,8 @@ const ScreenAccount = props => {
     phone: '',
   });
   const [page, setPage] = useState('account');
-  const [address, setAddress] = useState([]);
+  const [address, setAddress] = useState({status: true, data: []});
+  const [add, setHandleRefresh] = useState(false);
 
   useEffect(() => {
     getProfile(isToken, profile => {
@@ -60,9 +58,8 @@ const ScreenAccount = props => {
         phone: profile.phone,
       });
     });
-
     getAddress(isToken, setAddress);
-  }, [isToken != '']);
+  }, [isToken != '', address.status]);
 
   return isToken != '' ? (
     <SafeAreaView
@@ -125,169 +122,181 @@ const ScreenAccount = props => {
           </Text>
         </View>
         {page === 'account' ? (
-          <View style={{marginTop: adjust(5)}}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Text
+          address.status !== true ? (
+            <View style={{marginTop: adjust(5)}}>
+              <View
                 style={{
-                  fontSize: adjust(10),
-                  fontWeight: 'bold',
-                  color: GrayMedium,
-                }}>
-                Name
-              </Text>
-            </View>
-            <TextInput
-              value={dataUser.name}
-              onChangeText={e => {
-                setDataUser({
-                  ...dataUser,
-                  name: e,
-                });
-              }}
-              style={{
-                borderWidth: 1,
-                borderRadius: adjust(5),
-                borderColor: GrayMedium,
-                height: 40,
-                color: 'black',
-                paddingHorizontal: adjust(10),
-              }}
-            />
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: adjust(10),
-              }}>
-              <Text
-                style={{
-                  fontSize: adjust(10),
-                  fontWeight: 'bold',
-                  color: GrayMedium,
-                }}>
-                Email
-              </Text>
-            </View>
-            <TextInput
-              editable={false}
-              value={dataUser.email}
-              style={{
-                borderWidth: 1,
-                borderRadius: adjust(5),
-                borderColor: GrayMedium,
-                height: 40,
-                color: 'black',
-                paddingHorizontal: adjust(10),
-              }}
-            />
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: adjust(10),
-              }}>
-              <Text
-                style={{
-                  fontSize: adjust(10),
-                  fontWeight: 'bold',
-                  color: GrayMedium,
-                }}>
-                Mobile Phone
-              </Text>
-            </View>
-            <TextInput
-              keyboardType={'phone-pad'}
-              onChangeText={e => {
-                setDataUser({
-                  ...dataUser,
-                  phone: e,
-                });
-              }}
-              value={dataUser.phone}
-              style={{
-                borderWidth: 1,
-                borderRadius: adjust(5),
-                borderColor: GrayMedium,
-                height: 40,
-                color: 'black',
-                paddingHorizontal: adjust(10),
-              }}
-            />
-            {dataUser.name === '' || dataUser.phone === '' ? (
-              <TouchableOpacity
-                style={{
-                  paddingVertical: adjust(10),
-                  backgroundColor: GrayMedium,
-                  marginTop: adjust(15),
-                  borderRadius: adjust(5),
                   display: 'flex',
-                  justifyContent: 'center',
+                  flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}>
                 <Text
                   style={{
-                    fontSize: adjust(12),
+                    fontSize: adjust(10),
                     fontWeight: 'bold',
-                    color: 'white',
+                    color: GrayMedium,
                   }}>
-                  Perbarui Profile
+                  Name
                 </Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() =>
-                  UpdateProfile(
-                    isToken,
-                    {
-                      ava: dataUser.ava,
-                      email: dataUser.email,
-                      name: dataUser.name,
-                      phone: dataUser.phone,
-                    },
-                    response => {
-                      setIsUpdate(!isUpdate);
-                      alert('update succes');
-                    },
-                  )
-                }
+              </View>
+              <TextInput
+                value={dataUser.name}
+                onChangeText={e => {
+                  setDataUser({
+                    ...dataUser,
+                    name: e,
+                  });
+                }}
                 style={{
-                  paddingVertical: adjust(10),
-                  backgroundColor: blueB2C,
-                  marginTop: adjust(15),
+                  borderWidth: 1,
                   borderRadius: adjust(5),
+                  borderColor: GrayMedium,
+                  height: 40,
+                  color: 'black',
+                  paddingHorizontal: adjust(10),
+                }}
+              />
+              <View
+                style={{
                   display: 'flex',
-                  justifyContent: 'center',
+                  flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: adjust(10),
                 }}>
                 <Text
                   style={{
-                    fontSize: adjust(12),
+                    fontSize: adjust(10),
                     fontWeight: 'bold',
-                    color: 'white',
+                    color: GrayMedium,
                   }}>
-                  Perbarui Profile
+                  Email
                 </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        ) : (
+              </View>
+              <TextInput
+                editable={false}
+                value={dataUser.email}
+                style={{
+                  borderWidth: 1,
+                  borderRadius: adjust(5),
+                  borderColor: GrayMedium,
+                  height: 40,
+                  color: 'black',
+                  paddingHorizontal: adjust(10),
+                }}
+              />
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: adjust(10),
+                }}>
+                <Text
+                  style={{
+                    fontSize: adjust(10),
+                    fontWeight: 'bold',
+                    color: GrayMedium,
+                  }}>
+                  Mobile Phone
+                </Text>
+              </View>
+              <TextInput
+                keyboardType={'phone-pad'}
+                onChangeText={e => {
+                  setDataUser({
+                    ...dataUser,
+                    phone: e,
+                  });
+                }}
+                value={dataUser.phone}
+                style={{
+                  borderWidth: 1,
+                  borderRadius: adjust(5),
+                  borderColor: GrayMedium,
+                  height: 40,
+                  color: 'black',
+                  paddingHorizontal: adjust(10),
+                }}
+              />
+              {dataUser.name === '' || dataUser.phone === '' ? (
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: adjust(10),
+                    backgroundColor: GrayMedium,
+                    marginTop: adjust(15),
+                    borderRadius: adjust(5),
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: adjust(12),
+                      fontWeight: 'bold',
+                      color: 'white',
+                    }}>
+                    Perbarui Profile
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() =>
+                    UpdateProfile(
+                      isToken,
+                      {
+                        ava: dataUser.ava,
+                        email: dataUser.email,
+                        name: dataUser.name,
+                        phone: dataUser.phone,
+                      },
+                      response => {
+                        setIsUpdate(!isUpdate);
+                        alert('update succes');
+                      },
+                    )
+                  }
+                  style={{
+                    paddingVertical: adjust(10),
+                    backgroundColor: blueB2C,
+                    marginTop: adjust(15),
+                    borderRadius: adjust(5),
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: adjust(12),
+                      fontWeight: 'bold',
+                      color: 'white',
+                    }}>
+                    Perbarui Profile
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : (
+            <View
+              style={{
+                height: HeightScreen * 0.68,
+                justifyContent: 'center',
+                alignContent: 'center',
+                backgroundColor: 'black',
+              }}>
+              <LoadingPage />
+            </View>
+          )
+        ) : address.status === true ? (
           <View style={{height: HeightScreen * 0.68}}>
             <Text
               style={{fontSize: adjust(14), fontWeight: '400', color: 'black'}}>
               Alamat Pengiriman
             </Text>
             <FlatList
-              data={address}
+              data={address.data}
               renderItem={({item}) =>
                 item.is_main === true ? (
                   <View
@@ -349,7 +358,10 @@ const ScreenAccount = props => {
                           return (
                             <TouchableOpacity onPress={() => open.open()}>
                               <Text
-                                style={{fontSize: adjust(12), color: 'black'}}>
+                                style={{
+                                  fontSize: adjust(12),
+                                  color: 'black',
+                                }}>
                                 Hapus
                               </Text>
                             </TouchableOpacity>
@@ -417,7 +429,7 @@ const ScreenAccount = props => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                   onPress={() =>
-                                    deleteAddress(isToken, item.id)
+                                    deleteAddress(isToken, item.id, setAddress)
                                   }
                                   style={{
                                     flex: 1,
@@ -442,7 +454,9 @@ const ScreenAccount = props => {
                         }}
                       />
                       <TouchableOpacity
-                        onPress={() => setPrimaryAddress(isToken, item.id)}>
+                        onPress={() =>
+                          setPrimaryAddress(isToken, item.id, setAddress)
+                        }>
                         <Text
                           style={{
                             fontSize: adjust(10),
@@ -495,10 +509,6 @@ const ScreenAccount = props => {
               }}
               ContentCustoms={close => {
                 return (
-                  // <TouchableOpacity onPress={close.close}>
-                  //   {console.log(close, 'props')}
-                  //   <Text style={{color: 'black'}}>Close</Text>
-                  // </TouchableOpacity>
                   <View
                     style={{
                       padding: adjust(10),
@@ -514,11 +524,21 @@ const ScreenAccount = props => {
                       }}>
                       Tambah Alamat Pengiriman
                     </Text>
-                    <AddressForm props={close} />
+                    <AddressForm props={{close: close, address: setAddress}} />
                   </View>
                 );
               }}
             />
+          </View>
+        ) : (
+          <View
+            style={{
+              height: HeightScreen * 0.68,
+              justifyContent: 'center',
+              alignContent: 'center',
+              backgroundColor: 'black',
+            }}>
+            <LoadingPage />
           </View>
         )}
       </View>
