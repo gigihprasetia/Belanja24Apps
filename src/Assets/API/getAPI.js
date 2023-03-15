@@ -87,6 +87,19 @@ export const getDataCart = async (token = '', callback) => {
     .catch(err => console.log(err));
 };
 
+export const getPaymentMethod = async (token = '', callback) => {
+  await API.get(`/customer-sys/data-master/payment-methods`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(data => callback(data))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
 export const getAddress = async (token = '', callback) => {
   await API.get(`/customer-sys/profile/address`, {
     headers: {
