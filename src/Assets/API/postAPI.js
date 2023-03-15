@@ -174,3 +174,22 @@ export const setPrimaryAddress = async (token = '', params, data) => {
     .then(val => data({data: [], status: false}))
     .catch(err => console.log(err));
 };
+
+export const gotoPayment = async (token = '', data, callback) => {
+  await API.post(`/customer-sys/buy-process/submit`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => callback(val))
+    .catch(err => console.log(err));
+};
+export const getPaymentChain = async (token = '', data, callback) => {
+  await API.post(`/customer-sys/transaction/bill-detail`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => callback(val))
+    .catch(err => console.log(err));
+};

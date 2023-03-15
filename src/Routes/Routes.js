@@ -8,6 +8,7 @@ import ScreenDetailBarang from '../Screens/ScreenDetailBarang';
 import {adjust, blueB2C, HeightScreen, WidthScreen} from '../Assets/utils';
 import FontAwsome5 from 'react-native-vector-icons/FontAwesome5';
 import ScreenCheckout from '../Screens/ScreenCheckout';
+import ScreenPayment from '../Screens/ScreenPayment';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -60,6 +61,11 @@ const Routes = () => {
           // options={{headerShown: false}}
           name="Checkout"
           component={ScreenCheckout}
+        />
+        <stack.Screen
+          // options={{headerShown: false}}
+          name="Payment"
+          component={ScreenPayment}
         />
       </stack.Navigator>
     </NavigationContainer>
