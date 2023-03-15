@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  SafeAreaView,
 } from 'react-native';
 import React from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+// import {SafeAreaView} from 'react-native-safe-area-context';
 import {useState} from 'react';
 import {
   adjust,
