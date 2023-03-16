@@ -111,7 +111,7 @@ const ScreenCheckout = ({navigation}) => {
     };
   };
 
-  console.log(navigation);
+  // console.log(navigation);
   const calculateTotalProduct = data => {
     const total = data.map(value => value.data);
     const totalResult = total

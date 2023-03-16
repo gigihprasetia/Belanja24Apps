@@ -193,3 +193,4 @@ export const getPaymentChain = async (token = '', data, callback) => {
     .then(val => callback(val))
     .catch(err => console.log(err));
 };
+

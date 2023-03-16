@@ -121,3 +121,15 @@ export const getAddresShipping = async (token = '', callback) => {
       callback(false);
     });
 };
+export const InvoiceGenerate = async (token = '', chain_id, callback) => {
+  await API.get(`/customer-sys/transaction/invoice/${chain_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => callback(val))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
