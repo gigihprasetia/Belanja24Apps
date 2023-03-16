@@ -123,7 +123,7 @@ const ScreenAccount = props => {
           </Text>
         </View>
         {page === 'account' ? (
-          address.status !== true ? (
+          address.status === true ? (
             <View style={{marginTop: adjust(5)}}>
               <View
                 style={{

@@ -121,3 +121,29 @@ export const getAddresShipping = async (token = '', callback) => {
       callback(false);
     });
 };
+
+export const getWaitingPayment = async (token = '', callback) => {
+  await API.get('customer-sys/transaction/wait-payment', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback({status: false, data: res.data.data}))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
+export const getHistoryTransaction = async (token = '', callback) => {
+  await API.get('customer-sys/transaction/history', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback({status: false, data: res.data.data}))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};

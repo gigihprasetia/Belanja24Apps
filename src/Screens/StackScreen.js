@@ -16,6 +16,7 @@ import {useCallback} from 'react';
 import {useEffect} from 'react';
 import {SvgUri} from 'react-native-svg';
 import ScreenKeranjang from './ScreenKeranjang';
+import ScreenTransaction from './ScreenTransaction';
 const Tab = createBottomTabNavigator();
 
 const StackScreen = () => {
@@ -141,7 +142,7 @@ const StackScreen = () => {
         <Tab.Screen
           options={{headerShown: false}}
           name="Transaction"
-          component={ScreenAccount}
+          component={ScreenTransaction}
         />
       )}
       <Tab.Screen
