@@ -6449,6 +6449,11 @@
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz"
   "version" "0.70.3"
 
+"react-native-html-to-pdf@^0.12.0":
+  "integrity" "sha512-Yb5WO9SfF86s5Yv9PqXQ7fZDr9zZOJ+6jtweT9zFLraPNHWX7pSxe2dSkeg3cGiNrib65ZXGN6ksHymfYLFSSg=="
+  "resolved" "https://registry.npmjs.org/react-native-html-to-pdf/-/react-native-html-to-pdf-0.12.0.tgz"
+  "version" "0.12.0"
+
 "react-native-render-html@^6.3.4":
   "integrity" "sha512-H2jSMzZjidE+Wo3qCWPUMU1nm98Vs2SGCvQCz/i6xf0P3Y9uVtG/b0sDbG/cYFir2mSYBYCIlS1Dv0WC1LjYig=="
   "resolved" "https://registry.npmjs.org/react-native-render-html/-/react-native-render-html-6.3.4.tgz"

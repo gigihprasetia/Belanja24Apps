@@ -211,7 +211,29 @@ const ScreenTransaction = () => {
               data={dataHistory.data}
               renderItem={({item}) => (
                 <View style={styles.cardWaitingPayment}>
-                  <View style={{flex: 3}}></View>
+                  <View style={{flex: 3, marginRight: 2}}>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        // justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}>
+                      <Text
+                        style={[
+                          styles.miniText,
+                          {fontWeight: '500', marginRight: 2},
+                        ]}>
+                        {item.status === 'FINISH'
+                          ? 'Selesai'
+                          : 'Menunggu Konfirmasi'}
+                      </Text>
+                      <Text style={styles.miniText}>{item.created_at}</Text>
+                      <Text style={styles.miniText}>{item.invoice_number}</Text>
+                    </View>
+                  </View>
+                  {/*  */}
                   <View
                     style={{
                       flex: 2,

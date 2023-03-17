@@ -64,6 +64,7 @@ const ScreenKeranjang = ({navigation}) => {
       });
     });
   };
+  
   const decrementQty = (id, valQty) => {
     addToCart(token, {product_id: id, qty: valQty}, res => {
       // console.log(res);

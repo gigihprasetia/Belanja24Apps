@@ -121,9 +121,21 @@ export const getAddresShipping = async (token = '', callback) => {
       callback(false);
     });
 };
+export const InvoiceGenerate = async (token = '', chain_id, callback) => {
+  await API.get(`/customer-sys/transaction/invoice/${chain_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => callback(val))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
 
 export const getWaitingPayment = async (token = '', callback) => {
-  await API.get('customer-sys/transaction/wait-payment', {
+  await API.get(`customer-sys/transaction/wait-payment`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -134,9 +146,8 @@ export const getWaitingPayment = async (token = '', callback) => {
       callback(false);
     });
 };
-
 export const getHistoryTransaction = async (token = '', callback) => {
-  await API.get('customer-sys/transaction/history', {
+  await API.get(`customer-sys/transaction/history`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
