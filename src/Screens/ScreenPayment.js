@@ -51,8 +51,6 @@ const ScreenPayment = ({navigation, route}) => {
     });
   }, []);
 
-  console.log(chain_id, token);
-
   const createPDF = () => {
     InvoiceGenerate(token, chain_id, async res => {
       // console.log(res.data.data);
@@ -65,7 +63,7 @@ const ScreenPayment = ({navigation, route}) => {
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+      <meta http-equiv="X-UA-Coconmpatible" content="ie=edge" />
       <title>Static Template</title>
     </head>
     <body>

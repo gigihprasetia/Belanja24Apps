@@ -158,3 +158,16 @@ export const getHistoryTransaction = async (token = '', callback) => {
       callback(false);
     });
 };
+
+export const getDetailTransaction = async (token = '', id, callback) => {
+  await API.get(`customer-sys/transaction/detail/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback({status: false, data: res.data.data}))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};

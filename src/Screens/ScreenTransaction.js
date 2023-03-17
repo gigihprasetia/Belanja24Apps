@@ -11,21 +11,45 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
-import {getHistoryTransaction, getWaitingPayment} from '../Assets/API/getAPI';
-import {adjust, blueB2C, HeightScreen, WidthScreen} from '../Assets/utils';
+import {
+  getDetailTransaction,
+  getHistoryTransaction,
+  getWaitingPayment,
+  InvoiceGenerate,
+} from '../Assets/API/getAPI';
+import {
+  adjust,
+  blueB2C,
+  Gray,
+  GrayMedium,
+  HeightScreen,
+  WidthScreen,
+} from '../Assets/utils';
+import ModalComponent from '../Component/ModalComponent';
 
-const ScreenTransaction = () => {
+const ScreenTransaction = ({navigation}) => {
   const isToken = useSelector(state => state.Authentication.isLogin.token);
   const isFocus = useIsFocused();
   const [page, setPage] = useState('waitingPayment');
   const [dataPayment, setdataPayment] = useState({status: true, data: []});
   const [dataHistory, setDataHistory] = useState({status: true, data: []});
+  const [invoice, setInvoice] = useState({status: true, data: []});
+  const [detailTransaction, setDetailTransaction] = useState({
+    status: true,
+    data: {},
+  });
 
   useEffect(() => {
     getWaitingPayment(isToken, setdataPayment);
 
     getHistoryTransaction(isToken, setDataHistory);
   }, [isFocus]);
+
+  const createPDF = ({token, chain_id}) => {
+    InvoiceGenerate(token, id, async res => {
+      console.log(res, 'response');
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -159,10 +183,12 @@ const ScreenTransaction = () => {
                         justifyContent: 'space-between',
                       }}>
                       <TouchableOpacity
-                      // onPress={() =>
-                      //   setPrimaryAddress(isToken, item.id, setAddress)
-                      // }
-                      >
+                        onPress={() =>
+                          createPDF({
+                            token: isToken,
+                            id: item.payment.transaction_chain_id,
+                          })
+                        }>
                         <Text
                           style={{
                             fontSize: adjust(10),
@@ -178,10 +204,11 @@ const ScreenTransaction = () => {
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                      // onPress={() =>
-                      //   setPrimaryAddress(isToken, item.id, setAddress)
-                      // }
-                      >
+                        onPress={() =>
+                          navigation.navigate('Payment', {
+                            data: item.payment.transaction_chain_id,
+                          })
+                        }>
                         <Text
                           style={{
                             fontSize: adjust(10),
@@ -311,25 +338,238 @@ const ScreenTransaction = () => {
                         flexWrap: 'wrap',
                         justifyContent: 'space-between',
                       }}>
-                      <TouchableOpacity
-                      // onPress={() =>
-                      //   setPrimaryAddress(isToken, item.id, setAddress)
-                      // }
-                      >
-                        <Text
-                          style={{
-                            fontSize: adjust(10),
-                            color: 'white',
-                            padding: 4,
-                            borderRadius: 2,
-                            marginTop: adjust(8),
-                            borderWidth: 1,
-                            color: blueB2C,
-                            borderColor: blueB2C,
-                          }}>
-                          Detail Transaksi
-                        </Text>
-                      </TouchableOpacity>
+                      <ModalComponent
+                        ButtonCustoms={open => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => {
+                                open.open(),
+                                  getDetailTransaction(
+                                    isToken,
+                                    item.id,
+                                    setDetailTransaction,
+                                  );
+                              }}>
+                              <Text
+                                style={{
+                                  fontSize: adjust(10),
+                                  color: 'white',
+                                  padding: 4,
+                                  borderRadius: 2,
+                                  marginTop: adjust(8),
+                                  borderWidth: 1,
+                                  color: blueB2C,
+                                  borderColor: blueB2C,
+                                }}>
+                                Detail Transaksi
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        }}
+                        isTransparent={true}
+                        ContainerStyleContent={{
+                          backgroundColor: 'rgba(0,0,0,0.5)',
+                          flex: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                        ContentCustoms={close => {
+                          return (
+                            <View
+                              style={{
+                                padding: adjust(10),
+                                backgroundColor: 'white',
+                                width: WidthScreen * 0.9,
+                                borderRadius: adjust(5),
+                              }}>
+                              <View
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                }}>
+                                <Text
+                                  style={{
+                                    fontSize: adjust(16),
+                                    marginRight: adjust(4),
+                                    fontWeight: '400',
+                                    color: 'black',
+                                  }}>
+                                  Detail Transaksi
+                                </Text>
+                                {/* <Text
+                                  style={{
+                                    fontSize: adjust(8),
+                                    fontWeight: '300',
+                                    padding: adjust(2),
+                                    borderRadius: adjust(2),
+                                    color: GrayMedium,
+                                    backgroundColor: Gray,
+                                  }}>
+                                  {detailTransaction.data.transaction.status ===
+                                  'FINISH'
+                                    ? 'Selesai'
+                                    : 'Menunggu Konfirmasi'}
+                                </Text> */}
+                              </View>
+                              {/* content */}
+                              {detailTransaction.status !== true && (
+                                <>
+                                  <View
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      paddingHorizontal: adjust(4),
+                                      marginVertical: adjust(8),
+                                    }}>
+                                    <View
+                                      style={{
+                                        flex: 1,
+                                      }}>
+                                      <Text style={styles.mediumText}>
+                                        Nomor Invoice
+                                      </Text>
+                                      <Text style={styles.mediumText}>
+                                        Nama Toko
+                                      </Text>
+                                      <Text style={styles.mediumText}>
+                                        Tanggal
+                                      </Text>
+                                    </View>
+                                    {/*  */}
+                                    <View
+                                      style={{
+                                        flex: 2,
+                                      }}>
+                                      <Text style={styles.valueText}>
+                                        {
+                                          detailTransaction.data.transaction
+                                            .invoice_number
+                                        }
+                                      </Text>
+                                      <Text style={styles.valueText}>
+                                        {detailTransaction.data.provider.name}
+                                      </Text>
+                                      <Text style={styles.valueText}>
+                                        {
+                                          detailTransaction.data.transaction
+                                            .created_at
+                                        }
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  {/* image */}
+                                  <View
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                    }}>
+                                    <Image
+                                      source={{
+                                        uri: item.items[0].medias[0].url,
+                                      }}
+                                      style={{
+                                        width: adjust(60),
+                                        height: adjust(60),
+                                        resizeMode: 'contain',
+                                      }}
+                                    />
+                                    <View
+                                      style={{
+                                        flex: 1,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        flexWrap: 'wrap',
+                                        marginLeft: 4,
+                                        padding: 2,
+                                      }}>
+                                      <View style={{marginBottom: adjust(2)}}>
+                                        <Text
+                                          style={[
+                                            styles.miniText,
+                                            {fontWeight: '500'},
+                                          ]}>
+                                          {item.items[0].title}
+                                        </Text>
+                                        <Text style={styles.miniText}>
+                                          {
+                                            detailTransaction.data.products[0]
+                                              .qty
+                                          }{' '}
+                                          Buah
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  </View>
+                                  {/* conten2 */}
+                                  <View
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      paddingHorizontal: adjust(4),
+                                      marginVertical: adjust(8),
+                                    }}>
+                                    <View
+                                      style={{
+                                        flex: 1,
+                                      }}>
+                                      <Text style={styles.mediumText}>
+                                        Alamat Pengiriman
+                                      </Text>
+                                    </View>
+                                    {console.log(detailTransaction.data)}
+                                    <View
+                                      style={{
+                                        flex: 2,
+                                      }}>
+                                      <Text style={styles.valueText}>
+                                        {
+                                          detailTransaction.data.shipping
+                                            .pickup_address
+                                        }
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  <View
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      paddingHorizontal: adjust(4),
+                                      marginVertical: adjust(8),
+                                    }}>
+                                    <View
+                                      style={{
+                                        flex: 1,
+                                      }}>
+                                      <Text style={styles.mediumText}>
+                                        Alamat Penerima
+                                      </Text>
+                                    </View>
+                                    <View
+                                      style={{
+                                        flex: 2,
+                                      }}>
+                                      <Text style={styles.valueText}>
+                                        {
+                                          detailTransaction.data.shipping
+                                            .shipping_address
+                                        }
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </>
+                              )}
+                            </View>
+                          );
+                        }}
+                      />
                       <TouchableOpacity
                       // onPress={() =>
                       //   setPrimaryAddress(isToken, item.id, setAddress)
@@ -406,6 +646,11 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: 'black',
     marginVertical: adjust(2),
+  },
+  valueText: {
+    fontSize: adjust(13),
+    color: GrayMedium,
+    marginVertical: adjust(3),
   },
 });
 export default ScreenTransaction;
