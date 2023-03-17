@@ -10,11 +10,13 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
 import {getHistoryTransaction, getWaitingPayment} from '../Assets/API/getAPI';
 import {adjust, blueB2C, HeightScreen, WidthScreen} from '../Assets/utils';
 
 const ScreenTransaction = () => {
   const isToken = useSelector(state => state.Authentication.isLogin.token);
+  const isFocus = useIsFocused();
   const [page, setPage] = useState('waitingPayment');
   const [dataPayment, setdataPayment] = useState({status: true, data: []});
   const [dataHistory, setDataHistory] = useState({status: true, data: []});
@@ -23,9 +25,7 @@ const ScreenTransaction = () => {
     getWaitingPayment(isToken, setdataPayment);
 
     getHistoryTransaction(isToken, setDataHistory);
-  }, []);
-
-  console.log(dataHistory.data, 'data payment');
+  }, [isFocus]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,7 +85,7 @@ const ScreenTransaction = () => {
                   <View
                     style={{
                       flex: 2,
-                      marginRight: 8,
+                      marginRight: adjust(8),
                     }}>
                     <Text style={[styles.mediumText, {fontWeight: '600'}]}>
                       {item.invoice_number}
@@ -101,7 +101,7 @@ const ScreenTransaction = () => {
                         flexWrap: 'wrap',
                         justifyContent: 'space-between',
                       }}>
-                      <View style={{flex: 2, marginRight: 2}}>
+                      <View style={{flex: 2, marginRight: adjust(2)}}>
                         <Text style={styles.miniText}>Metode Pembayaran</Text>
                         <Text style={styles.miniText}>BNI Virtual Account</Text>
                         <Image
@@ -132,7 +132,7 @@ const ScreenTransaction = () => {
                       style={{
                         color: 'black',
                         fontSize: adjust(11),
-                        marginVertical: 8,
+                        marginVertical: adjust(8),
                       }}>
                       Bayar sebelum {item.expired_date_f}
                     </Text>
@@ -169,7 +169,7 @@ const ScreenTransaction = () => {
                             color: 'white',
                             padding: 4,
                             borderRadius: 2,
-                            marginTop: 8,
+                            marginTop: adjust(8),
                             borderWidth: 1,
                             color: blueB2C,
                             borderColor: blueB2C,
@@ -188,7 +188,7 @@ const ScreenTransaction = () => {
                             color: 'white',
                             padding: 4,
                             borderRadius: 2,
-                            marginTop: 8,
+                            marginTop: adjust(8),
                             backgroundColor: blueB2C,
                           }}>
                           Bayar Tagihan
@@ -202,7 +202,7 @@ const ScreenTransaction = () => {
             />
           </View>
         ) : (
-          <View style={{height: HeightScreen * 0.68}}>
+          <View style={{height: HeightScreen * 0.8}}>
             <Text
               style={{fontSize: adjust(14), fontWeight: '400', color: 'black'}}>
               Histori Transaksi
@@ -211,19 +211,19 @@ const ScreenTransaction = () => {
               data={dataHistory.data}
               renderItem={({item}) => (
                 <View style={styles.cardWaitingPayment}>
-                  <View style={{flex: 3, marginRight: 2}}>
+                  <View style={{flex: 3, marginRight: adjust(2)}}>
                     <View
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        // justifyContent: 'space-between',
                         alignItems: 'center',
                         flexWrap: 'wrap',
+                        marginBottom: adjust(2),
                       }}>
                       <Text
                         style={[
                           styles.miniText,
-                          {fontWeight: '500', marginRight: 2},
+                          {fontWeight: '500', marginRight: adjust(2)},
                         ]}>
                         {item.status === 'FINISH'
                           ? 'Selesai'
@@ -231,6 +231,56 @@ const ScreenTransaction = () => {
                       </Text>
                       <Text style={styles.miniText}>{item.created_at}</Text>
                       <Text style={styles.miniText}>{item.invoice_number}</Text>
+                    </View>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <Image
+                        source={{uri: item.items[0].medias[0].url}}
+                        style={{
+                          width: adjust(60),
+                          height: adjust(60),
+                          resizeMode: 'contain',
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          flexWrap: 'wrap',
+                          marginLeft: 4,
+                          padding: 2,
+                        }}>
+                        <View style={{marginBottom: adjust(2)}}>
+                          <Text style={[styles.miniText, {fontWeight: '500'}]}>
+                            {item.items[0].title}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                          }}>
+                          <Image
+                            source={{uri: item.provider_ava}}
+                            style={{
+                              width: adjust(30),
+                              height: adjust(30),
+                              resizeMode: 'contain',
+                            }}
+                          />
+                          <View>
+                            <Text style={styles.miniText}>{item.provider}</Text>
+                            <Text style={styles.miniText}>
+                              {item.provider_city}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
                     </View>
                   </View>
                   {/*  */}
@@ -272,7 +322,7 @@ const ScreenTransaction = () => {
                             color: 'white',
                             padding: 4,
                             borderRadius: 2,
-                            marginTop: 8,
+                            marginTop: adjust(8),
                             borderWidth: 1,
                             color: blueB2C,
                             borderColor: blueB2C,
@@ -291,7 +341,7 @@ const ScreenTransaction = () => {
                             color: 'white',
                             padding: 4,
                             borderRadius: 2,
-                            marginTop: 8,
+                            marginTop: adjust(8),
                             backgroundColor: blueB2C,
                           }}>
                           Beli Lagi
@@ -317,7 +367,7 @@ const styles = StyleSheet.create({
     padding: adjust(10),
   },
   content: {
-    marginTop: 10,
+    marginTop: adjust(10),
     paddingHorizontal: 4,
     paddingVertical: 8,
     borderRadius: 4,
@@ -349,13 +399,13 @@ const styles = StyleSheet.create({
   mediumText: {
     fontSize: adjust(13),
     color: 'black',
-    marginVertical: 3,
+    marginVertical: adjust(3),
   },
   miniText: {
     fontSize: adjust(7),
     fontWeight: '400',
     color: 'black',
-    marginVertical: 2,
+    marginVertical: adjust(2),
   },
 });
 export default ScreenTransaction;

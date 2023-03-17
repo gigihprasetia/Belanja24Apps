@@ -30,6 +30,7 @@ import {
   UpdateProfile,
 } from '../Assets/API/postAPI';
 import {useEffect} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import {getAddress, getProfile} from '../Assets/API/getAPI';
 import ModalComponent from '../Component/ModalComponent';
 import AddressForm from '../Component/AddressForm';
@@ -38,7 +39,7 @@ import LoadingPage from '../Component/LoadingPage';
 const ScreenAccount = props => {
   const [screenView, setScreenView] = useState('login');
   const isToken = useSelector(state => state.Authentication.isLogin.token);
-
+  const isFocus = useIsFocused();
   const {navigation} = props;
   const [dataUser, setDataUser] = useState({
     ava: '',
@@ -60,7 +61,7 @@ const ScreenAccount = props => {
       });
     });
     getAddress(isToken, setAddress);
-  }, [isToken != '', address.status]);
+  }, [isToken != '', address.status, isFocus]);
 
   return isToken != '' ? (
     <SafeAreaView
