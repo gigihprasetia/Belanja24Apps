@@ -51,10 +51,20 @@ const CardKeranjang = ({
             }}
           />
           <View>
-            <Text style={{fontSize: adjust(10), fontWeight: 'bold'}}>
+            <Text
+              style={{
+                fontSize: adjust(10),
+                fontWeight: 'bold',
+                color: 'black',
+              }}>
               {item.title}
             </Text>
-            <Text style={{fontSize: adjust(10), fontWeight: 'bold'}}>
+            <Text
+              style={{
+                fontSize: adjust(10),
+                fontWeight: 'bold',
+                color: 'black',
+              }}>
               {formatter(item.price)}
             </Text>
           </View>
@@ -96,7 +106,8 @@ const CardKeranjang = ({
           borderTopColor: GrayMedium,
         }}>
         <View>
-          <Text style={{fontSize: adjust(10), fontWeight: 'bold'}}>
+          <Text
+            style={{fontSize: adjust(10), fontWeight: 'bold', color: 'black'}}>
             Stock: {item.stock - item.qty}
           </Text>
         </View>

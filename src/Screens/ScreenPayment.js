@@ -1,4 +1,11 @@
-import {View, Text, SafeAreaView, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getPaymentChain} from '../Assets/API/postAPI';
 import {getFromRedux} from '../Assets/API/GetRedux';
@@ -35,7 +42,7 @@ const ScreenPayment = ({navigation, route}) => {
     getPaymentChain(token, {chain_id}, res => {
       //   console.log(res.data.data.how_to_pay);
       setSource({
-        html: res.data.data.how_to_pay,
+        html: `<div style="color:black;">${res.data.data.how_to_pay}</div>`,
       });
       setDataPayment({
         status: true,
@@ -171,82 +178,93 @@ ${data.items.map(val => {
         backgroundColor: 'white',
         padding: adjust(10),
       }}>
-      <Text style={{color: blueB2C, fontSize: adjust(12), fontWeight: 'bold'}}>
-        Screen Pembayaran
-      </Text>
-      <View
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginVertical: adjust(10),
-        }}>
-        <Image
-          source={{uri: dataPayment.data.payment_method_ava}}
-          style={{
-            width: WidthScreen * 0.4,
-            height: WidthScreen * 0.4,
-            resizeMode: 'contain',
-          }}
-        />
+      <ScrollView>
         <Text
-          style={{color: GrayMedium, fontSize: adjust(10), fontWeight: 'bold'}}>
-          {dataPayment.data.title}
+          style={{color: blueB2C, fontSize: adjust(12), fontWeight: 'bold'}}>
+          Screen Pembayaran
         </Text>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginVertical: adjust(10),
+          }}>
+          <Image
+            source={{uri: dataPayment.data.payment_method_ava}}
+            style={{
+              width: WidthScreen * 0.4,
+              height: WidthScreen * 0.4,
+              resizeMode: 'contain',
+            }}
+          />
+          <Text
+            style={{
+              color: GrayMedium,
+              fontSize: adjust(10),
+              fontWeight: 'bold',
+            }}>
+            {dataPayment.data.title}
+          </Text>
+          <Text
+            style={{
+              color: blueB2C,
+              fontSize: adjust(12),
+              fontWeight: 'bold',
+              marginTop: adjust(5),
+            }}>
+            {dataPayment.data.account_number}
+          </Text>
+        </View>
         <Text
           style={{
-            color: blueB2C,
-            fontSize: adjust(12),
+            color: GrayMedium,
+            fontSize: adjust(10),
             fontWeight: 'bold',
             marginTop: adjust(5),
           }}>
-          {dataPayment.data.account_number}
+          Bayar Sebelum
+          {dataPayment.data.expired_date}
         </Text>
-      </View>
-      <Text
-        style={{
-          color: GrayMedium,
-          fontSize: adjust(10),
-          fontWeight: 'bold',
-          marginTop: adjust(5),
-        }}>
-        Bayar Sebelum
-        {dataPayment.data.expired_date}
-      </Text>
-      <RenderHtml contentWidth={width} source={source} />
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderColor: Gray,
-          paddingVertical: adjust(10),
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        onPress={() => {
-          createPDF();
-        }}>
-        <Text
-          style={{color: GrayMedium, fontSize: adjust(10), fontWeight: 'bold'}}>
-          Cetak Invoice
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderColor: blueB2C,
-          paddingVertical: adjust(10),
-          display: 'flex',
-          alignItems: 'center',
-          marginTop: adjust(10),
-        }}
-        onPress={() => {
-          navigation.navigate('Transaction');
-        }}>
-        <Text
-          style={{color: blueB2C, fontSize: adjust(10), fontWeight: 'bold'}}>
-          Cek Transaction
-        </Text>
-      </TouchableOpacity>
+        <RenderHtml contentWidth={width} source={source} />
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: Gray,
+            paddingVertical: adjust(10),
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onPress={() => {
+            createPDF();
+          }}>
+          <Text
+            style={{
+              color: GrayMedium,
+              fontSize: adjust(10),
+              fontWeight: 'bold',
+            }}>
+            Cetak Invoice
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: blueB2C,
+            paddingVertical: adjust(10),
+            display: 'flex',
+            alignItems: 'center',
+            marginTop: adjust(10),
+          }}
+          onPress={() => {
+            navigation.navigate('Transaction');
+          }}>
+          <Text
+            style={{color: blueB2C, fontSize: adjust(10), fontWeight: 'bold'}}>
+            Cek Transaction
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   ) : (
     <LoadingPage />
