@@ -608,13 +608,13 @@ const ScreenTransaction = ({navigation}) => {
                           ButtonCustoms={open => {
                             return (
                               <TouchableOpacity
-                                onPress={() => {
-                                  open.open(),
-                                    getDetailTransaction(
-                                      isToken,
-                                      item.id,
-                                      setDetailTransaction,
-                                    );
+                                onPress={async () => {
+                                  await getDetailTransaction(
+                                    isToken,
+                                    item.id,
+                                    setDetailTransaction,
+                                  );
+                                  open.open();
                                 }}>
                                 <Text
                                   style={{
@@ -670,6 +670,10 @@ const ScreenTransaction = ({navigation}) => {
                                       }}>
                                       Detail Transaksi
                                     </Text>
+                                    {console.log(
+                                      detailTransaction,
+                                      'detail transaction',
+                                    )}
                                     <Text
                                       style={{
                                         fontSize: adjust(8),
@@ -679,7 +683,7 @@ const ScreenTransaction = ({navigation}) => {
                                         color: GrayMedium,
                                         backgroundColor: Gray,
                                       }}>
-                                      {detailTransaction.length !== 0 &&
+                                      {detailTransaction.data.length !== 0 &&
                                       detailTransaction.data.transaction
                                         .status === 'FINISH'
                                         ? 'Selesai'
