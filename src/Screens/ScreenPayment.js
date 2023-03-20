@@ -55,7 +55,7 @@ const ScreenPayment = ({navigation, route}) => {
     InvoiceGenerate(token, chain_id, async res => {
       // console.log(res.data.data);
       const data = res.data.data.results[0];
-      console.log(data);
+      // console.log(data);
 
       let options = {
         html: `

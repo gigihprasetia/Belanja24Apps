@@ -16,16 +16,22 @@ import {
   getHistoryTransaction,
   getWaitingPayment,
   InvoiceGenerate,
+  InvoiceTranGenerate,
 } from '../Assets/API/getAPI';
 import {
   adjust,
   blueB2C,
+  formatter,
   Gray,
   GrayMedium,
   HeightScreen,
   WidthScreen,
 } from '../Assets/utils';
 import ModalComponent from '../Component/ModalComponent';
+import EmptyFolder from 'react-native-vector-icons/FontAwesome';
+import PrintIcon from 'react-native-vector-icons/Ionicons';
+import ShippingIcon from 'react-native-vector-icons/MaterialIcons';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 const ScreenTransaction = ({navigation}) => {
   const isToken = useSelector(state => state.Authentication.isLogin.token);
@@ -45,9 +51,233 @@ const ScreenTransaction = ({navigation}) => {
     getHistoryTransaction(isToken, setDataHistory);
   }, [isFocus]);
 
-  const createPDF = ({token, chain_id}) => {
-    InvoiceGenerate(token, id, async res => {
+  const createPDF = async ({token, chain_id}) => {
+    await InvoiceGenerate(token, chain_id, async res => {
+      const data = res.results[0];
+
+      let options = {
+        html: `
+        <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="X-UA-Coconmpatible" content="ie=edge" />
+      <title>Static Template</title>
+    </head>
+    <body>
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          font-size: 11pt
+        "
+      >
+        <div>
+          <div>
+            <img
+            style="width: 15%; background-size: contain;"
+            src="https://shellrean.sgp1.cdn.digitaloceanspaces.com/belanja24.com/public/manual/logo%20belanja24%20b2c%20(1)%20(1).png"
+            />
+            <p>Belanja 24.com</p>
+            <p>Nomor Invoice : ${data.transaction.invoice_number}</p>
+          </div>
+          <div style="margin-top: 30px">
+            <p style="font-weight: 900;">Diterbitkan atas nama</p>
+            <p>Penjual : ${data.transaction.provider_name}</p>
+            <p>Tanggal : ${data.transaction.date}</p>
+          </div>
+        </div>
+        <div
+          style="display: flex; flex-direction: column; align-items: flex-end;"
+        >
+          <p>Tujuan Pengiriman</p>
+          <p style="font-weight: 900;">${data.shipping.recipient_name}</p>
+          <p style="text-align: right">
+          ${data.shipping.shipping_address}
+          </p>
+          <p style="text-align: right">${
+            data.shipping.shipping_district
+          } </br> ${data.shipping.shipping_city}</br>${
+          data.shipping.shipping_province
+        } </br>55552</p>
+        </div>
+      </div>
+      <table style="width: 100%">
+          <tr >
+            <th style="border: 1px solid black;" >Nama Product</th>
+            <th style="border: 1px solid black;">Jumlah</th>
+            <th style="border: 1px solid black;">Harga Barang</th>
+            <th style="border: 1px solid black;">Sub Total</th>
+          </tr>
+  ${data.items.map(val => {
+    return `
+  <tr  >
+  <td style="border: 1px solid black;">${val.title}
+    </td>
+  <td style="border: 1px solid black;">${val.qty}</td>
+  <td style="border: 1px solid black;">${formatter(val.price)}</td>
+  <td style="border: 1px solid black;">${formatter(val.total_price)}</td>
+  </tr>
+  `;
+  })}
+          <tr  >
+            <td colspan="3" style="border: 1px solid black;">
+              SubTotal Harga Product
+              </td>
+            <td style="border: 1px solid black;">${formatter(
+              data.transaction.base_price,
+            )}</td>
+          </tr>
+  
+        </table>
+            <div style="margin-top: 30px;display: flex;justify-content: end">
+                <table style="width: 50%">
+                    <tr >
+                      <th style="border: 1px solid black;" >Pajak</th>
+                      <th style="border: 1px solid black;">Harga Sudah Termasuk Pajak</th>
+                    </tr>
+                    ${data.items.map(val => {
+                      return `
+                      <tr  >
+                        <td style="border: 1px solid black;">${val.title}</td>
+                        <td style="border: 1px solid black;">${formatter(
+                          val.total_price,
+                        )}</td>
+                      </tr>
+                        `;
+                    })}
+                    <tr  >
+                      <td style="border: 1px solid black;">Total Pembayaran</td>
+                      <td style="border: 1px solid black;">${formatter(
+                        data.transaction.final_price,
+                      )}</td>
+                    </tr>
+                  </table>
+            </div>
+    </body>
+  </html>
+        `,
+        fileName: `Invoice_Belanja24_${new Date().getTime()}`,
+        directory: 'Documents',
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      alert(file.filePath);
+    });
+  };
+
+  const createTranPDF = async ({token, id}) => {
+    await InvoiceTranGenerate(token, id, async res => {
+      const data = res;
       console.log(res, 'response');
+      let options = {
+        html: `
+        <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="X-UA-Coconmpatible" content="ie=edge" />
+      <title>Static Template</title>
+    </head>
+    <body>
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          font-size: 11pt
+        "
+      >
+        <div>
+          <div>
+            <img
+            style="width: 15%; background-size: contain;"
+            src="https://shellrean.sgp1.cdn.digitaloceanspaces.com/belanja24.com/public/manual/logo%20belanja24%20b2c%20(1)%20(1).png"
+            />
+            <p>Belanja 24.com</p>
+            <p>Nomor Invoice : ${data.transaction.invoice_number}</p>
+          </div>
+          <div style="margin-top: 30px">
+            <p style="font-weight: 900;">Diterbitkan atas nama</p>
+            <p>Penjual : ${data.transaction.provider_name}</p>
+            <p>Tanggal : ${data.transaction.date}</p>
+          </div>
+        </div>
+        <div
+          style="display: flex; flex-direction: column; align-items: flex-end;"
+        >
+          <p>Tujuan Pengiriman</p>
+          <p style="font-weight: 900;">${data.shipping.recipient_name}</p>
+          <p style="text-align: right">
+          ${data.shipping.shipping_address}
+          </p>
+          <p style="text-align: right">${
+            data.shipping.shipping_district
+          } </br> ${data.shipping.shipping_city}</br>${
+          data.shipping.shipping_province
+        } </br>55552</p>
+        </div>
+      </div>
+      <table style="width: 100%">
+          <tr >
+            <th style="border: 1px solid black;" >Nama Product</th>
+            <th style="border: 1px solid black;">Jumlah</th>
+            <th style="border: 1px solid black;">Harga Barang</th>
+            <th style="border: 1px solid black;">Sub Total</th>
+          </tr>
+  ${data.items.map(val => {
+    return `
+  <tr  >
+  <td style="border: 1px solid black;">${val.title}
+    </td>
+  <td style="border: 1px solid black;">${val.qty}</td>
+  <td style="border: 1px solid black;">${formatter(val.price)}</td>
+  <td style="border: 1px solid black;">${formatter(val.total_price)}</td>
+  </tr>
+  `;
+  })}
+          <tr  >
+            <td colspan="3" style="border: 1px solid black;">
+              SubTotal Harga Product
+              </td>
+            <td style="border: 1px solid black;">${formatter(
+              data.transaction.base_price,
+            )}</td>
+          </tr>
+  
+        </table>
+            <div style="margin-top: 30px;display: flex;justify-content: end">
+                <table style="width: 50%">
+                    <tr >
+                      <th style="border: 1px solid black;" >Pajak</th>
+                      <th style="border: 1px solid black;">Harga Sudah Termasuk Pajak</th>
+                    </tr>
+                    ${data.items.map(val => {
+                      return `
+                      <tr  >
+                        <td style="border: 1px solid black;">${val.title}</td>
+                        <td style="border: 1px solid black;">${formatter(
+                          val.total_price,
+                        )}</td>
+                      </tr>
+                        `;
+                    })}
+                    <tr  >
+                      <td style="border: 1px solid black;">Total Pembayaran</td>
+                      <td style="border: 1px solid black;">${formatter(
+                        data.transaction.final_price,
+                      )}</td>
+                    </tr>
+                  </table>
+            </div>
+    </body>
+  </html>
+        `,
+        fileName: `Invoice_Belanja24_${new Date().getTime()}`,
+        directory: 'Documents',
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      alert(file.filePath);
     });
   };
 
@@ -102,131 +332,161 @@ const ScreenTransaction = ({navigation}) => {
               Menunggu Pembayaran
             </Text>
             {/* card items */}
-            <FlatList
-              data={dataPayment.data}
-              renderItem={({item}) => (
-                <View style={styles.cardWaitingPayment}>
-                  <View
-                    style={{
-                      flex: 2,
-                      marginRight: adjust(8),
-                    }}>
-                    <Text style={[styles.mediumText, {fontWeight: '600'}]}>
-                      {item.invoice_number}
-                    </Text>
-                    <Text style={{color: 'black', fontSize: adjust(10)}}>
-                      Tanggal Pemesanan {item.order_date_f}
-                    </Text>
+            {dataPayment.data.length !== 0 ? (
+              <FlatList
+                data={dataPayment.data}
+                renderItem={({item}) => (
+                  <View style={styles.cardWaitingPayment}>
+                    <View
+                      style={{
+                        flex: 2,
+                        marginRight: adjust(8),
+                      }}>
+                      <Text style={[styles.mediumText, {fontWeight: '600'}]}>
+                        {item.invoice_number}
+                      </Text>
+                      <Text style={{color: 'black', fontSize: adjust(10)}}>
+                        Tanggal Pemesanan {item.order_date_f}
+                      </Text>
+                      {/*  */}
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                        }}>
+                        <View style={{flex: 2, marginRight: adjust(2)}}>
+                          <Text style={styles.miniText}>Metode Pembayaran</Text>
+                          <Text style={styles.miniText}>
+                            BNI Virtual Account
+                          </Text>
+                          <Image
+                            source={{uri: item.payment.payment_ava}}
+                            style={{
+                              width: adjust(40),
+                              height: adjust(40),
+                              resizeMode: 'contain',
+                            }}
+                          />
+                        </View>
+                        <View style={{flex: 2}}>
+                          <Text style={[styles.miniText, {fontWeight: '700'}]}>
+                            Transfer Bank
+                          </Text>
+                          <Text style={[styles.miniText, {fontWeight: '700'}]}>
+                            {item.payment.account_number}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
                     {/*  */}
                     <View
                       style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
+                        flex: 2,
                       }}>
-                      <View style={{flex: 2, marginRight: adjust(2)}}>
-                        <Text style={styles.miniText}>Metode Pembayaran</Text>
-                        <Text style={styles.miniText}>BNI Virtual Account</Text>
-                        <Image
-                          source={{uri: item.payment.payment_ava}}
-                          style={{
-                            width: adjust(40),
-                            height: adjust(40),
-                            resizeMode: 'contain',
-                          }}
-                        />
-                      </View>
-                      <View style={{flex: 2}}>
-                        <Text style={[styles.miniText, {fontWeight: '700'}]}>
-                          Transfer Bank
-                        </Text>
-                        <Text style={[styles.miniText, {fontWeight: '700'}]}>
-                          {item.payment.account_number}
-                        </Text>
+                      <Text
+                        style={{
+                          color: 'black',
+                          fontSize: adjust(11),
+                          marginVertical: adjust(8),
+                        }}>
+                        Bayar sebelum {item.expired_date_f}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: '700',
+                          color: 'black',
+                        }}>
+                        Total Bayar
+                      </Text>
+                      <Text style={[styles.mediumText, {fontWeight: '600'}]}>
+                        {new Intl.NumberFormat('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
+                        }).format(item.amount)}
+                      </Text>
+                      {/* button */}
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            createPDF({
+                              token: isToken,
+                              chain_id: item.payment.transaction_chain_id,
+                            });
+                          }}>
+                          <Text
+                            style={{
+                              fontSize: adjust(10),
+                              color: 'white',
+                              padding: 4,
+                              borderRadius: 2,
+                              marginTop: adjust(8),
+                              borderWidth: 1,
+                              color: blueB2C,
+                              borderColor: blueB2C,
+                            }}>
+                            Cetak Invoice
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate('Payment', {
+                              data: item.payment.transaction_chain_id,
+                            })
+                          }>
+                          <Text
+                            style={{
+                              fontSize: adjust(10),
+                              color: 'white',
+                              padding: 4,
+                              borderRadius: 2,
+                              marginTop: adjust(8),
+                              backgroundColor: blueB2C,
+                            }}>
+                            Bayar Tagihan
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     </View>
                   </View>
-                  {/*  */}
-                  <View
+                )}
+                keyExtractor={item => item.id}
+              />
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <EmptyFolder name="folder-open" size={60} color={GrayMedium} />
+                <Text style={[{marginTop: adjust(8)}, styles.mediumText]}>
+                  Tidak Ada Transaksi yang belum di Bayar
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Beranda')}>
+                  <Text
                     style={{
-                      flex: 2,
+                      fontSize: adjust(13),
+                      color: 'white',
+                      padding: 8,
+                      borderRadius: 2,
+                      marginTop: adjust(8),
+                      backgroundColor: blueB2C,
                     }}>
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontSize: adjust(11),
-                        marginVertical: adjust(8),
-                      }}>
-                      Bayar sebelum {item.expired_date_f}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: '700',
-                        color: 'black',
-                      }}>
-                      Total Bayar
-                    </Text>
-                    <Text style={[styles.mediumText, {fontWeight: '600'}]}>
-                      {new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                      }).format(item.amount)}
-                    </Text>
-                    {/* button */}
-                    <View
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TouchableOpacity
-                        onPress={() =>
-                          createPDF({
-                            token: isToken,
-                            id: item.payment.transaction_chain_id,
-                          })
-                        }>
-                        <Text
-                          style={{
-                            fontSize: adjust(10),
-                            color: 'white',
-                            padding: 4,
-                            borderRadius: 2,
-                            marginTop: adjust(8),
-                            borderWidth: 1,
-                            color: blueB2C,
-                            borderColor: blueB2C,
-                          }}>
-                          Cetak Invoice
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate('Payment', {
-                            data: item.payment.transaction_chain_id,
-                          })
-                        }>
-                        <Text
-                          style={{
-                            fontSize: adjust(10),
-                            color: 'white',
-                            padding: 4,
-                            borderRadius: 2,
-                            marginTop: adjust(8),
-                            backgroundColor: blueB2C,
-                          }}>
-                          Bayar Tagihan
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              )}
-              keyExtractor={item => item.id}
-            />
+                    Mulai Belanja
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ) : (
           <View style={{height: HeightScreen * 0.8}}>
@@ -234,365 +494,484 @@ const ScreenTransaction = ({navigation}) => {
               style={{fontSize: adjust(14), fontWeight: '400', color: 'black'}}>
               Histori Transaksi
             </Text>
-            <FlatList
-              data={dataHistory.data}
-              renderItem={({item}) => (
-                <View style={styles.cardWaitingPayment}>
-                  <View style={{flex: 3, marginRight: adjust(2)}}>
-                    <View
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        marginBottom: adjust(2),
-                      }}>
-                      <Text
-                        style={[
-                          styles.miniText,
-                          {fontWeight: '500', marginRight: adjust(2)},
-                        ]}>
-                        {item.status === 'FINISH'
-                          ? 'Selesai'
-                          : 'Menunggu Konfirmasi'}
-                      </Text>
-                      <Text style={styles.miniText}>{item.created_at}</Text>
-                      <Text style={styles.miniText}>{item.invoice_number}</Text>
-                    </View>
-                    <View
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        source={{uri: item.items[0].medias[0].url}}
-                        style={{
-                          width: adjust(60),
-                          height: adjust(60),
-                          resizeMode: 'contain',
-                        }}
-                      />
+            {dataHistory.data.length !== 0 ? (
+              <FlatList
+                data={dataHistory.data}
+                renderItem={({item}) => (
+                  <View style={styles.cardWaitingPayment}>
+                    <View style={{flex: 3, marginRight: adjust(2)}}>
                       <View
                         style={{
-                          flex: 1,
                           display: 'flex',
-                          flexDirection: 'column',
+                          flexDirection: 'row',
+                          alignItems: 'center',
                           flexWrap: 'wrap',
-                          marginLeft: 4,
-                          padding: 2,
+                          marginBottom: adjust(2),
                         }}>
-                        <View style={{marginBottom: adjust(2)}}>
-                          <Text style={[styles.miniText, {fontWeight: '500'}]}>
-                            {item.items[0].title}
-                          </Text>
-                        </View>
+                        <Text
+                          style={[
+                            styles.miniText,
+                            {fontWeight: '500', marginRight: adjust(2)},
+                          ]}>
+                          {item.status === 'FINISH'
+                            ? 'Selesai'
+                            : 'Menunggu Konfirmasi'}
+                        </Text>
+                        <Text style={styles.miniText}>{item.created_at}</Text>
+                        <Text style={styles.miniText}>
+                          {item.invoice_number}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}>
+                        <Image
+                          source={{uri: item.items[0].medias[0].url}}
+                          style={{
+                            width: adjust(60),
+                            height: adjust(60),
+                            resizeMode: 'contain',
+                          }}
+                        />
                         <View
                           style={{
+                            flex: 1,
                             display: 'flex',
-                            flexDirection: 'row',
+                            flexDirection: 'column',
+                            flexWrap: 'wrap',
+                            marginLeft: 4,
+                            padding: 2,
                           }}>
-                          <Image
-                            source={{uri: item.provider_ava}}
-                            style={{
-                              width: adjust(30),
-                              height: adjust(30),
-                              resizeMode: 'contain',
-                            }}
-                          />
-                          <View>
-                            <Text style={styles.miniText}>{item.provider}</Text>
-                            <Text style={styles.miniText}>
-                              {item.provider_city}
+                          <View style={{marginBottom: adjust(2)}}>
+                            <Text
+                              style={[styles.miniText, {fontWeight: '500'}]}>
+                              {item.items[0].title}
                             </Text>
+                          </View>
+                          <View
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                            }}>
+                            <Image
+                              source={{uri: item.provider_ava}}
+                              style={{
+                                width: adjust(30),
+                                height: adjust(30),
+                                resizeMode: 'contain',
+                              }}
+                            />
+                            <View>
+                              <Text style={styles.miniText}>
+                                {item.provider}
+                              </Text>
+                              <Text style={styles.miniText}>
+                                {item.provider_city}
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
                     </View>
-                  </View>
-                  {/*  */}
-                  <View
-                    style={{
-                      flex: 2,
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: '700',
-                        color: 'black',
-                      }}>
-                      Harga Total
-                    </Text>
-                    <Text style={[styles.mediumText, {fontWeight: '600'}]}>
-                      {/* {new Intl.NumberFormat('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                  }).format(item.amount)} */}
-                      33900.00
-                    </Text>
-                    {/* button */}
+                    {/*  */}
                     <View
                       style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
+                        flex: 2,
                       }}>
-                      <ModalComponent
-                        ButtonCustoms={open => {
-                          return (
-                            <TouchableOpacity
-                              onPress={() => {
-                                open.open(),
-                                  getDetailTransaction(
-                                    isToken,
-                                    item.id,
-                                    setDetailTransaction,
-                                  );
-                              }}>
-                              <Text
-                                style={{
-                                  fontSize: adjust(10),
-                                  color: 'white',
-                                  padding: 4,
-                                  borderRadius: 2,
-                                  marginTop: adjust(8),
-                                  borderWidth: 1,
-                                  color: blueB2C,
-                                  borderColor: blueB2C,
-                                }}>
-                                Detail Transaksi
-                              </Text>
-                            </TouchableOpacity>
-                          );
-                        }}
-                        isTransparent={true}
-                        ContainerStyleContent={{
-                          backgroundColor: 'rgba(0,0,0,0.5)',
-                          flex: 1,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                        ContentCustoms={close => {
-                          return (
-                            <View
-                              style={{
-                                padding: adjust(10),
-                                backgroundColor: 'white',
-                                width: WidthScreen * 0.9,
-                                borderRadius: adjust(5),
-                              }}>
-                              <View
-                                style={{
-                                  display: 'flex',
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: '700',
+                          color: 'black',
+                        }}>
+                        Harga Total
+                      </Text>
+                      <Text style={[styles.mediumText, {fontWeight: '600'}]}>
+                        {/* {new Intl.NumberFormat('id-ID', {
+                 style: 'currency',
+                 currency: 'IDR',
+               }).format(item.amount)} */}
+                        33900.00
+                      </Text>
+                      {/* button */}
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                        }}>
+                        <ModalComponent
+                          ButtonCustoms={open => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  open.open(),
+                                    getDetailTransaction(
+                                      isToken,
+                                      item.id,
+                                      setDetailTransaction,
+                                    );
                                 }}>
                                 <Text
                                   style={{
-                                    fontSize: adjust(16),
-                                    marginRight: adjust(4),
-                                    fontWeight: '400',
-                                    color: 'black',
+                                    fontSize: adjust(10),
+                                    color: 'white',
+                                    padding: 4,
+                                    borderRadius: 2,
+                                    marginTop: adjust(8),
+                                    borderWidth: 1,
+                                    color: blueB2C,
+                                    borderColor: blueB2C,
                                   }}>
                                   Detail Transaksi
                                 </Text>
-                                {/* <Text
+                              </TouchableOpacity>
+                            );
+                          }}
+                          isTransparent={true}
+                          ContainerStyleContent={{
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                          ContentCustoms={close => {
+                            return (
+                              <View
+                                style={{
+                                  padding: adjust(10),
+                                  backgroundColor: 'white',
+                                  width: WidthScreen * 0.9,
+                                  borderRadius: adjust(5),
+                                }}>
+                                <View
                                   style={{
-                                    fontSize: adjust(8),
-                                    fontWeight: '300',
-                                    padding: adjust(2),
-                                    borderRadius: adjust(2),
-                                    color: GrayMedium,
-                                    backgroundColor: Gray,
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
                                   }}>
-                                  {detailTransaction.data.transaction.status ===
-                                  'FINISH'
-                                    ? 'Selesai'
-                                    : 'Menunggu Konfirmasi'}
-                                </Text> */}
-                              </View>
-                              {/* content */}
-                              {detailTransaction.status !== true && (
-                                <>
                                   <View
                                     style={{
                                       display: 'flex',
                                       flexDirection: 'row',
                                       alignItems: 'center',
-                                      justifyContent: 'center',
-                                      paddingHorizontal: adjust(4),
-                                      marginVertical: adjust(8),
                                     }}>
-                                    <View
+                                    <Text
                                       style={{
-                                        flex: 1,
+                                        fontSize: adjust(16),
+                                        marginRight: adjust(4),
+                                        fontWeight: '400',
+                                        color: 'black',
                                       }}>
-                                      <Text style={styles.mediumText}>
-                                        Nomor Invoice
-                                      </Text>
-                                      <Text style={styles.mediumText}>
-                                        Nama Toko
-                                      </Text>
-                                      <Text style={styles.mediumText}>
-                                        Tanggal
-                                      </Text>
-                                    </View>
-                                    {/*  */}
-                                    <View
+                                      Detail Transaksi
+                                    </Text>
+                                    <Text
                                       style={{
-                                        flex: 2,
+                                        fontSize: adjust(8),
+                                        fontWeight: '300',
+                                        padding: adjust(2),
+                                        borderRadius: adjust(2),
+                                        color: GrayMedium,
+                                        backgroundColor: Gray,
                                       }}>
-                                      <Text style={styles.valueText}>
-                                        {
-                                          detailTransaction.data.transaction
-                                            .invoice_number
-                                        }
-                                      </Text>
-                                      <Text style={styles.valueText}>
-                                        {detailTransaction.data.provider.name}
-                                      </Text>
-                                      <Text style={styles.valueText}>
-                                        {
-                                          detailTransaction.data.transaction
-                                            .created_at
-                                        }
-                                      </Text>
-                                    </View>
+                                      {detailTransaction.length !== 0 &&
+                                      detailTransaction.data.transaction
+                                        .status === 'FINISH'
+                                        ? 'Selesai'
+                                        : 'Menunggu Konfirmasi'}
+                                    </Text>
                                   </View>
-                                  {/* image */}
-                                  <View
-                                    style={{
-                                      display: 'flex',
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                    }}>
-                                    <Image
-                                      source={{
-                                        uri: item.items[0].medias[0].url,
-                                      }}
+                                  <TouchableOpacity
+                                    onPress={() => close.close()}>
+                                    <Text
                                       style={{
-                                        width: adjust(60),
-                                        height: adjust(60),
-                                        resizeMode: 'contain',
-                                      }}
-                                    />
+                                        fontSize: adjust(10),
+                                        color: 'white',
+                                        paddingVertical: 4,
+                                        paddingHorizontal: 8,
+                                        borderRadius: 2,
+                                        marginTop: adjust(8),
+                                        backgroundColor: 'red',
+                                      }}>
+                                      Close
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                                {/* content */}
+                                {detailTransaction.status !== true && (
+                                  <>
                                     <View
                                       style={{
-                                        flex: 1,
                                         display: 'flex',
-                                        flexDirection: 'column',
-                                        flexWrap: 'wrap',
-                                        marginLeft: 4,
-                                        padding: 2,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: adjust(4),
+                                        marginVertical: adjust(8),
                                       }}>
-                                      <View style={{marginBottom: adjust(2)}}>
-                                        <Text
-                                          style={[
-                                            styles.miniText,
-                                            {fontWeight: '500'},
-                                          ]}>
-                                          {item.items[0].title}
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                        }}>
+                                        <Text style={styles.mediumText}>
+                                          Nomor Invoice
                                         </Text>
-                                        <Text style={styles.miniText}>
+                                        <Text style={styles.mediumText}>
+                                          Nama Toko
+                                        </Text>
+                                        <Text style={styles.mediumText}>
+                                          Tanggal
+                                        </Text>
+                                      </View>
+                                      {/*  */}
+                                      <View
+                                        style={{
+                                          flex: 2,
+                                        }}>
+                                        <Text style={styles.valueText}>
                                           {
-                                            detailTransaction.data.products[0]
-                                              .qty
-                                          }{' '}
-                                          Buah
+                                            detailTransaction.data.transaction
+                                              .invoice_number
+                                          }
+                                        </Text>
+                                        <Text style={styles.valueText}>
+                                          {detailTransaction.data.provider.name}
+                                        </Text>
+                                        <Text style={styles.valueText}>
+                                          {
+                                            detailTransaction.data.transaction
+                                              .created_at
+                                          }
                                         </Text>
                                       </View>
                                     </View>
-                                  </View>
-                                  {/* conten2 */}
-                                  <View
-                                    style={{
-                                      display: 'flex',
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      paddingHorizontal: adjust(4),
-                                      marginVertical: adjust(8),
-                                    }}>
+                                    {/* image */}
                                     <View
                                       style={{
-                                        flex: 1,
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
                                       }}>
-                                      <Text style={styles.mediumText}>
-                                        Alamat Pengiriman
-                                      </Text>
+                                      <Image
+                                        source={{
+                                          uri: item.items[0].medias[0].url,
+                                        }}
+                                        style={{
+                                          width: adjust(60),
+                                          height: adjust(60),
+                                          resizeMode: 'contain',
+                                        }}
+                                      />
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          flexWrap: 'wrap',
+                                          marginLeft: 4,
+                                          padding: 2,
+                                        }}>
+                                        <View style={{marginBottom: adjust(2)}}>
+                                          <Text
+                                            style={[
+                                              styles.miniText,
+                                              {fontWeight: '500'},
+                                            ]}>
+                                            {item.items[0].title}
+                                          </Text>
+                                          <Text style={styles.miniText}>
+                                            {
+                                              detailTransaction.data.products[0]
+                                                .qty
+                                            }{' '}
+                                            Buah
+                                          </Text>
+                                        </View>
+                                      </View>
                                     </View>
-                                    {console.log(detailTransaction.data)}
+                                    {/* conten2 */}
                                     <View
                                       style={{
-                                        flex: 2,
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: adjust(4),
+                                        marginVertical: adjust(8),
                                       }}>
-                                      <Text style={styles.valueText}>
-                                        {
-                                          detailTransaction.data.shipping
-                                            .pickup_address
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                        }}>
+                                        <Text style={styles.mediumText}>
+                                          Alamat Pengiriman
+                                        </Text>
+                                      </View>
+                                      <View
+                                        style={{
+                                          flex: 2,
+                                        }}>
+                                        <Text style={styles.valueText}>
+                                          {
+                                            detailTransaction.data.shipping
+                                              .pickup_address
+                                          }
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <View
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: adjust(4),
+                                        marginVertical: adjust(8),
+                                      }}>
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                        }}>
+                                        <Text style={styles.mediumText}>
+                                          Alamat Penerima
+                                        </Text>
+                                      </View>
+                                      <View
+                                        style={{
+                                          flex: 2,
+                                        }}>
+                                        <Text style={styles.valueText}>
+                                          {
+                                            detailTransaction.data.shipping
+                                              .shipping_address
+                                          }
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <View>
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          createTranPDF({
+                                            token: isToken,
+                                            id: detailTransaction.data
+                                              .transaction.id,
+                                          })
                                         }
-                                      </Text>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={{
-                                      display: 'flex',
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      paddingHorizontal: adjust(4),
-                                      marginVertical: adjust(8),
-                                    }}>
-                                    <View
-                                      style={{
-                                        flex: 1,
-                                      }}>
-                                      <Text style={styles.mediumText}>
-                                        Alamat Penerima
-                                      </Text>
-                                    </View>
-                                    <View
-                                      style={{
-                                        flex: 2,
-                                      }}>
-                                      <Text style={styles.valueText}>
-                                        {
-                                          detailTransaction.data.shipping
-                                            .shipping_address
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          justifyContent: 'center',
+                                          alignItems: 'center',
+                                          paddingVertical: 8,
+                                          borderRadius: 2,
+                                          marginTop: adjust(8),
+                                          backgroundColor: 'white',
+                                          borderWidth: 1,
+                                          borderColor: blueB2C,
+                                        }}>
+                                        <PrintIcon
+                                          name="print"
+                                          size={20}
+                                          color={blueB2C}
+                                        />
+                                        <Text
+                                          style={{
+                                            fontSize: adjust(10),
+                                            marginLeft: 4,
+                                            color: blueB2C,
+                                          }}>
+                                          Cetak Invoice
+                                        </Text>
+                                      </TouchableOpacity>
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          navigation.navigate('Beranda')
                                         }
-                                      </Text>
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          justifyContent: 'center',
+                                          alignItems: 'center',
+                                          paddingVertical: 8,
+                                          borderRadius: 2,
+                                          marginTop: adjust(8),
+                                          backgroundColor: 'white',
+                                          borderWidth: 1,
+                                          borderColor: blueB2C,
+                                        }}>
+                                        <ShippingIcon
+                                          name="local-shipping"
+                                          size={20}
+                                          color={blueB2C}
+                                        />
+                                        <Text
+                                          style={{
+                                            fontSize: adjust(10),
+                                            color: blueB2C,
+                                            marginLeft: 4,
+                                          }}>
+                                          History Pengiriman
+                                        </Text>
+                                      </TouchableOpacity>
                                     </View>
-                                  </View>
-                                </>
-                              )}
-                            </View>
-                          );
-                        }}
-                      />
-                      <TouchableOpacity
-                      // onPress={() =>
-                      //   setPrimaryAddress(isToken, item.id, setAddress)
-                      // }
-                      >
-                        <Text
-                          style={{
-                            fontSize: adjust(10),
-                            color: 'white',
-                            padding: 4,
-                            borderRadius: 2,
-                            marginTop: adjust(8),
-                            backgroundColor: blueB2C,
-                          }}>
-                          Beli Lagi
-                        </Text>
-                      </TouchableOpacity>
+                                  </>
+                                )}
+                              </View>
+                            );
+                          }}
+                        />
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate('Beranda')}>
+                          <Text
+                            style={{
+                              fontSize: adjust(10),
+                              color: 'white',
+                              padding: 4,
+                              borderRadius: 2,
+                              marginTop: adjust(8),
+                              backgroundColor: blueB2C,
+                            }}>
+                            Beli Lagi
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
-                </View>
-              )}
-              keyExtractor={item => item.id}
-            />
+                )}
+                keyExtractor={item => item.id}
+              />
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <EmptyFolder name="folder-open" size={60} color={GrayMedium} />
+                <Text style={[{marginTop: adjust(8)}, styles.mediumText]}>
+                  Tidak Ada Transaksi yang belum di Bayar
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Beranda')}>
+                  <Text
+                    style={{
+                      fontSize: adjust(13),
+                      color: 'white',
+                      padding: 8,
+                      borderRadius: 2,
+                      marginTop: adjust(8),
+                      backgroundColor: blueB2C,
+                    }}>
+                    Mulai Belanja
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
       </View>
