@@ -92,7 +92,11 @@ const StackScreen = () => {
                         <SvgUri
                           width={adjust(15)}
                           height={adjust(15)}
-                          uri={isUser.ava}
+                          uri={
+                            isUser.ava === null
+                              ? 'https://shellrean.sgp1.digitaloceanspaces.com/belanja24.com/public/ava/001.svg'
+                              : isUser.ava
+                          }
                         />
                       ) : (
                         <MaterialIcons
