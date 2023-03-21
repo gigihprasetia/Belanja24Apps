@@ -29,6 +29,9 @@ const Authentication = (state = initialState, action) => {
         isUser: action.data,
       };
       break;
+    case 'logout':
+      return initialState;
+      break;
     default:
       return state;
       break;

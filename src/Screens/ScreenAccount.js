@@ -22,7 +22,7 @@ import {
 } from '../Assets/utils';
 import LoginForm from '../Component/LoginForm';
 import RegisterForm from '../Component/RegisterForm';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {SvgUri} from 'react-native-svg';
 import {
   deleteAddress,
@@ -50,6 +50,7 @@ const ScreenAccount = props => {
   const [page, setPage] = useState('account');
   const [address, setAddress] = useState({status: true, data: []});
   const [add, setHandleRefresh] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getProfile(isToken, profile => {
@@ -79,7 +80,15 @@ const ScreenAccount = props => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <SvgUri width={'100%'} height={'100%'} uri={dataUser.ava} />
+        <SvgUri
+          width={'100%'}
+          height={'100%'}
+          uri={
+            dataUser.ava === null
+              ? 'https://shellrean.sgp1.digitaloceanspaces.com/belanja24.com/public/ava/001.svg'
+              : dataUser.ava
+          }
+        />
       </View>
       <Text
         style={{
@@ -255,7 +264,6 @@ const ScreenAccount = props => {
                         phone: dataUser.phone,
                       },
                       response => {
-                        setIsUpdate(!isUpdate);
                         alert('update succes');
                       },
                     )
@@ -279,6 +287,28 @@ const ScreenAccount = props => {
                   </Text>
                 </TouchableOpacity>
               )}
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch({type: 'logout'});
+                }}
+                style={{
+                  paddingVertical: adjust(10),
+                  backgroundColor: 'red',
+                  marginTop: adjust(15),
+                  borderRadius: adjust(5),
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontSize: adjust(12),
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}>
+                  Logout
+                </Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <View
