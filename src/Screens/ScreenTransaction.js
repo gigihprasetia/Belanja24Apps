@@ -32,6 +32,7 @@ import EmptyFolder from 'react-native-vector-icons/FontAwesome';
 import PrintIcon from 'react-native-vector-icons/Ionicons';
 import ShippingIcon from 'react-native-vector-icons/MaterialIcons';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import ReviewFrom from '../Component/ReviewFrom';
 
 const ScreenTransaction = ({navigation}) => {
   const isToken = useSelector(state => state.Authentication.isLogin.token);
@@ -590,11 +591,10 @@ const ScreenTransaction = ({navigation}) => {
                         Harga Total
                       </Text>
                       <Text style={[styles.mediumText, {fontWeight: '600'}]}>
-                        {/* {new Intl.NumberFormat('id-ID', {
-                 style: 'currency',
-                 currency: 'IDR',
-               }).format(item.amount)} */}
-                        33900.00
+                        {new Intl.NumberFormat('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
+                        }).format(item.price)}{' '}
                       </Text>
                       {/* button */}
                       <View
@@ -795,6 +795,64 @@ const ScreenTransaction = ({navigation}) => {
                                             }{' '}
                                             Buah
                                           </Text>
+                                          {item.status === 'FINISH' ? (
+                                            <ModalComponent
+                                              ButtonCustoms={open => {
+                                                return (
+                                                  <TouchableOpacity
+                                                    onPress={() => open.open()}>
+                                                    <Text
+                                                      style={{
+                                                        fontSize: adjust(10),
+                                                        color: 'white',
+                                                        padding: 4,
+                                                        borderRadius: 2,
+                                                        marginTop: adjust(8),
+                                                        backgroundColor:
+                                                          blueB2C,
+                                                      }}>
+                                                      Tulis Ulasan
+                                                    </Text>
+                                                  </TouchableOpacity>
+                                                );
+                                              }}
+                                              isTransparent={true}
+                                              ContainerStyleContent={{
+                                                backgroundColor:
+                                                  'rgba(0,0,0,0.5)',
+                                                flex: 1,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                              }}
+                                              ContentCustoms={close => {
+                                                return (
+                                                  <View
+                                                    style={{
+                                                      padding: adjust(10),
+                                                      backgroundColor: 'white',
+                                                      width: WidthScreen * 0.8,
+                                                      borderRadius: adjust(5),
+                                                    }}>
+                                                    <Text
+                                                      style={{
+                                                        fontSize: adjust(13),
+                                                        fontWeight: 'bold',
+                                                        color: blueB2C,
+                                                      }}>
+                                                      Tulis Ulasan
+                                                    </Text>
+                                                    {/*  */}
+                                                    <ReviewFrom
+                                                      props={{
+                                                        data: detailTransaction,
+                                                        close: close,
+                                                      }}
+                                                    />
+                                                  </View>
+                                                );
+                                              }}
+                                            />
+                                          ) : null}
                                         </View>
                                       </View>
                                     </View>
@@ -929,20 +987,22 @@ const ScreenTransaction = ({navigation}) => {
                             );
                           }}
                         />
-                        <TouchableOpacity
-                          onPress={() => navigation.navigate('Beranda')}>
-                          <Text
-                            style={{
-                              fontSize: adjust(10),
-                              color: 'white',
-                              padding: 4,
-                              borderRadius: 2,
-                              marginTop: adjust(8),
-                              backgroundColor: blueB2C,
-                            }}>
-                            Beli Lagi
-                          </Text>
-                        </TouchableOpacity>
+                        {item.status === 'FINISH' ? (
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate('Beranda')}>
+                            <Text
+                              style={{
+                                fontSize: adjust(10),
+                                color: 'white',
+                                padding: 4,
+                                borderRadius: 2,
+                                marginTop: adjust(8),
+                                backgroundColor: blueB2C,
+                              }}>
+                              Beli Lagi
+                            </Text>
+                          </TouchableOpacity>
+                        ) : null}
                       </View>
                     </View>
                   </View>

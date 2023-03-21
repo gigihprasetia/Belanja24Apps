@@ -194,3 +194,12 @@ export const getPaymentChain = async (token = '', data, callback) => {
     .catch(err => console.log(err));
 };
 
+export const postReview = async (token = '', data, callback) => {
+  await API.post(`/customer-sys/order/review`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => console.log(val))
+    .catch(err => console.log(err));
+};
