@@ -188,3 +188,16 @@ export const getDetailTransaction = async (token = '', id, callback) => {
       callback(false);
     });
 };
+
+export const getHistoryShipping = async (token = '', id, callback) => {
+  await API.get(`customer-sys/order/shipping-history/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback({status: false, data: res.data.data}))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};

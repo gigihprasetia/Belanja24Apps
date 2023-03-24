@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
-  TextInput,
+  Modal,
   FlatList,
   TouchableOpacity,
   Image,
@@ -13,6 +13,7 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import {
   getDetailTransaction,
+  getHistoryShipping,
   getHistoryTransaction,
   getWaitingPayment,
   InvoiceGenerate,
@@ -38,12 +39,17 @@ const ScreenTransaction = ({navigation}) => {
   const isToken = useSelector(state => state.Authentication.isLogin.token);
   const isFocus = useIsFocused();
   const [page, setPage] = useState('waitingPayment');
+  const [modalVisible, setModalVisible] = useState(false);
   const [dataPayment, setdataPayment] = useState({status: true, data: []});
   const [dataHistory, setDataHistory] = useState({status: true, data: []});
   const [invoice, setInvoice] = useState({status: true, data: []});
   const [detailTransaction, setDetailTransaction] = useState({
     status: true,
     data: {},
+  });
+  const [historyShipping, setHistoryShipping] = useState({
+    status: true,
+    data: [],
   });
 
   useEffect(() => {
@@ -670,10 +676,6 @@ const ScreenTransaction = ({navigation}) => {
                                       }}>
                                       Detail Transaksi
                                     </Text>
-                                    {console.log(
-                                      detailTransaction,
-                                      'detail transaction',
-                                    )}
                                     <Text
                                       style={{
                                         fontSize: adjust(8),
@@ -950,10 +952,138 @@ const ScreenTransaction = ({navigation}) => {
                                           Cetak Invoice
                                         </Text>
                                       </TouchableOpacity>
+                                      <Modal
+                                        animationType="fade"
+                                        transparent={true}
+                                        visible={modalVisible}
+                                        onRequestClose={() => {
+                                          setModalVisible(!modalVisible);
+                                        }}>
+                                        <View
+                                          style={{
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            flex: 1,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                          }}>
+                                          <View
+                                            style={{
+                                              padding: adjust(10),
+                                              backgroundColor: 'white',
+                                              width: WidthScreen * 0.8,
+                                              borderRadius: adjust(5),
+                                            }}>
+                                            <Text
+                                              style={{
+                                                fontSize: adjust(13),
+                                                fontWeight: 'bold',
+                                                color: blueB2C,
+                                              }}>
+                                              Riwayat Pengiriman
+                                            </Text>
+                                            <FlatList
+                                              data={historyShipping.data}
+                                              renderItem={({item}) => (
+                                                <View
+                                                  style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent:
+                                                      'space-between',
+                                                    padding: 4,
+                                                    borderRadius: 4,
+                                                    marginVertical: adjust(8),
+                                                    backgroundColor: 'white',
+                                                    shadowColor: 'black',
+                                                    shadowOffset: {
+                                                      width: 1,
+                                                      height: 1,
+                                                    },
+                                                    shadowOpacity: 0.2,
+                                                    shadowRadius: 10,
+                                                    elevation: 5,
+                                                  }}>
+                                                  {console.log(item, 'item')}
+                                                  <View
+                                                    style={{
+                                                      flex: 1,
+                                                      paddingHorizontal: 4,
+                                                      marginRight: 4,
+                                                    }}>
+                                                    <Text
+                                                      style={[
+                                                        styles.miniText,
+                                                        {
+                                                          fontWeight: '500',
+                                                          marginRight:
+                                                            adjust(2),
+                                                          padding: adjust(2),
+                                                          borderRadius:
+                                                            adjust(2),
+                                                          backgroundColor: Gray,
+                                                        },
+                                                      ]}>
+                                                      {item.status ===
+                                                      'shipping_arrived'
+                                                        ? 'Tiba diTujuan'
+                                                        : 'Dalam Pengiriman'}
+                                                    </Text>
+                                                    <Text
+                                                      style={styles.miniText}>
+                                                      {item.human_date}
+                                                    </Text>
+                                                  </View>
+                                                  <View style={{flex: 2}}>
+                                                    <Text
+                                                      style={styles.miniText}>
+                                                      {item.literal}
+                                                    </Text>
+                                                  </View>
+                                                </View>
+                                              )}
+                                              keyExtractor={item => item.id}
+                                            />
+                                            {/*  */}
+                                            <View
+                                              style={{
+                                                marginTop: adjust(10),
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                              }}>
+                                              <TouchableOpacity
+                                                onPress={() =>
+                                                  setModalVisible(!modalVisible)
+                                                }
+                                                style={{
+                                                  flex: 1,
+                                                  borderWidth: 1,
+                                                  borderColor: 'red',
+                                                  padding: adjust(10),
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  marginRight: adjust(2),
+                                                }}>
+                                                <Text
+                                                  style={{
+                                                    fontSize: adjust(10),
+                                                    color: 'red',
+                                                  }}>
+                                                  Cencel
+                                                </Text>
+                                              </TouchableOpacity>
+                                            </View>
+                                          </View>
+                                        </View>
+                                      </Modal>
                                       <TouchableOpacity
-                                        onPress={() =>
-                                          navigation.navigate('Beranda')
-                                        }
+                                        onPress={async () => {
+                                          setModalVisible(!modalVisible),
+                                            await getHistoryShipping(
+                                              isToken,
+                                              item.id,
+                                              setHistoryShipping,
+                                            );
+                                        }}
                                         style={{
                                           display: 'flex',
                                           flexDirection: 'row',

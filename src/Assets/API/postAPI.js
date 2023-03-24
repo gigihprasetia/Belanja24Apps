@@ -200,6 +200,6 @@ export const postReview = async (token = '', data, callback) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then(val => console.log(val))
+    .then(val => callback(val.data))
     .catch(err => console.log(err));
 };
