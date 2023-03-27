@@ -201,3 +201,29 @@ export const getHistoryShipping = async (token = '', id, callback) => {
       callback(false);
     });
 };
+
+export const getSummaryReview = async (token = '', slug, callback) => {
+  await API.get(`guest-sys/fade/summary-review/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback(res))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
+export const getReview = async (token = '', id, callback) => {
+  await API.get(`guest-sys/fade/review/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback(res))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
