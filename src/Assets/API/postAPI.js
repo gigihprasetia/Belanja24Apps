@@ -1,5 +1,5 @@
 import axios from 'axios';
-import API from './API';
+import {API, API2} from './API';
 
 export const inquiryBasic = async callback => {
   //   console.log(data);

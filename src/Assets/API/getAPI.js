@@ -1,5 +1,5 @@
 import {useSelector} from 'react-redux';
-import API from './API';
+import {API, API2} from './API';
 
 export const getPopularProduct = async (token = '', callback) => {
   await API.get('/guest-sys/fade/popular-product', {
@@ -200,4 +200,21 @@ export const getHistoryShipping = async (token = '', id, callback) => {
       console.log(err);
       callback(false);
     });
+};
+
+export const searchQueryProduct = async (token = '', query, callback) => {
+  try {
+    const results = await API2.get(
+      `/se-engine/proxy-search-product?attr=title,categories,tags&search=${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    // console.log(results, query);
+    callback({status: true, data: results.data.hits});
+  } catch (error) {
+    callback({status: false, data: []});
+  }
 };

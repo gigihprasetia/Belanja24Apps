@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-const API = axios.create({
+export const API = axios.create({
   baseURL: 'https://uat-api.belanja24.com/api/v1',
   withCredentials: false,
 });
 
-export default API;
+export const API2 = axios.create({
+  baseURL: 'https://uat-api.belanja24.com',
+  withCredentials: false,
+});

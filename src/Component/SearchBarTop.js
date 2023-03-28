@@ -1,5 +1,5 @@
 import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   adjust,
   blueB2C,
@@ -10,7 +10,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SearchBarTop = props => {
-  // console.log(props);
+  const {navigation} = props;
+  const [input, setInput] = useState('');
   return (
     <View
       style={{
@@ -53,8 +54,14 @@ const SearchBarTop = props => {
               borderTopLeftRadius: 5,
               borderBottomLeftRadius: 5,
             }}
+            onChangeText={e => setInput(e)}
           />
           <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Pencarian', {
+                searchQuery: input,
+              })
+            }
             style={{
               paddingHorizontal: adjust(12),
               justifyContent: 'center',

@@ -9,6 +9,10 @@ import {adjust, blueB2C, HeightScreen, WidthScreen} from '../Assets/utils';
 import FontAwsome5 from 'react-native-vector-icons/FontAwesome5';
 import ScreenCheckout from '../Screens/ScreenCheckout';
 import ScreenPayment from '../Screens/ScreenPayment';
+import ScreenPencarian from '../Screens/ScreenPencarian';
+import {SearchBar} from 'react-native-screens';
+import Slider from '../Component/Slider';
+import SearchBarTop from '../Component/SearchBarTop';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -66,6 +70,14 @@ const Routes = () => {
           // options={{headerShown: false}}
           name="Payment"
           component={ScreenPayment}
+        />
+        <stack.Screen
+          options={{
+            headerShown: true,
+            header: props => <SearchBarTop {...props} />,
+          }}
+          name="Pencarian"
+          component={ScreenPencarian}
         />
       </stack.Navigator>
     </NavigationContainer>
