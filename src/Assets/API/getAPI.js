@@ -217,6 +217,7 @@ export const searchQueryProduct = async (token = '', query, callback) => {
   } catch (error) {
     callback({status: false, data: []});
   }
+};
 export const getSummaryReview = async (token = '', slug, callback) => {
   await API.get(`guest-sys/fade/summary-review/${slug}`, {
     headers: {
