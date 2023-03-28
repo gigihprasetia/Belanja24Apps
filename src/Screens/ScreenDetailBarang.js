@@ -11,7 +11,12 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useEffect} from 'react';
-import {getDetailProduct, getRelatedProduct} from '../Assets/API/getAPI';
+import {
+  getDetailProduct,
+  getRelatedProduct,
+  getReview,
+  getSummaryReview,
+} from '../Assets/API/getAPI';
 import {useState} from 'react';
 import {
   adjust,
@@ -33,6 +38,8 @@ import {useMemo} from 'react';
 import {useCallback} from 'react';
 import {addToCart} from '../Assets/API/postAPI';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import StarImage from 'react-native-vector-icons/FontAwesome';
+import UserImage from 'react-native-vector-icons/FontAwesome5';
 
 export default function ScreenDetailBarang(props) {
   const [detailBarang, setDetailBarang] = useState({
@@ -50,6 +57,16 @@ export default function ScreenDetailBarang(props) {
     price: '',
     stock: 0,
     qty: 1,
+  });
+
+  const [summaryReview, setSummaryReview] = useState({
+    isLoading: true,
+    data: null,
+  });
+
+  const [review, setReview] = useState({
+    isLoading: true,
+    data: null,
   });
 
   // https://api.belanja24.com/api/v1/guest-sys/fade/detail-product/projection-screen-smr-300225q-63f46cd3e7bff
@@ -86,9 +103,21 @@ export default function ScreenDetailBarang(props) {
         data: related.data.data,
       }),
     );
-  }, []);
 
-  // console.log(detailBarang.data);
+    if (detailBarang.data !== null) {
+      getSummaryReview(
+        token,
+        detailBarang.data.id,
+        async summaryReview => await setSummaryReview(summaryReview.data),
+      );
+
+      getReview(
+        token,
+        detailBarang.data.id,
+        async review => await setReview(review.data),
+      );
+    }
+  }, []);
 
   const calculateStock = useMemo(() => {
     return calculateItemCart.stock - calculateItemCart.qty;
@@ -252,6 +281,217 @@ export default function ScreenDetailBarang(props) {
                         {detailBarang.data.provider.city}
                       </Text>
                     </View>
+                  </View>
+                </View>
+                {/* Ratting */}
+                <View>
+                  <View
+                    style={{
+                      paddingVertical: adjust(5),
+                      borderBottomWidth: 1,
+                      borderBottomColor: GrayMedium,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: adjust(12),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                        marginVertical: adjust(5),
+                      }}>
+                      Ratting
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: WidthScreen * 0.4,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginVertical: 4,
+                    }}>
+                    <View
+                      style={{
+                        flex: 1,
+                        marginRight: 4,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      {[...Array(5).keys()].map(val => (
+                        <StarImage
+                          // onPress={() => setRatting(val + 1)}
+                          name="star"
+                          size={12}
+                          color={'#FACC15'}
+                          key={val}
+                        />
+                      ))}
+                    </View>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(10),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      3 out of 5
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontSize: adjust(10),
+                      fontWeight: '400',
+                      color: 'black',
+                    }}>
+                    3 global ratings
+                  </Text>
+                  {/* jumlah pengulas */}
+                  <View
+                    style={{
+                      width: WidthScreen * 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 4,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      5 star
+                    </Text>
+                    <View
+                      style={{
+                        width: '50%',
+                        padding: 3,
+                        borderRadius: 10,
+                        backgroundColor: '#FACC15',
+                        marginHorizontal: 8,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      50%
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: WidthScreen * 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 4,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      4 star
+                    </Text>
+                    <View
+                      style={{
+                        width: '50%',
+                        padding: 3,
+                        borderRadius: 10,
+                        backgroundColor: '#FACC15',
+                        marginHorizontal: 8,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      50%
+                    </Text>
+                  </View>
+                  {/* Summary */}
+                  <View
+                    style={{
+                      width: WidthScreen * 0.7,
+                      padding: 6,
+                      borderRadius: 4,
+                      marginVertical: adjust(8),
+                      backgroundColor: 'white',
+                      shadowColor: 'black',
+                      shadowOffset: {width: 1, height: 1},
+                      shadowOpacity: 0.2,
+                      shadowRadius: 10,
+                      elevation: 5,
+                    }}>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                      }}>
+                      <UserImage name="user-circle" size={20} color="black" />
+                      <View style={{marginLeft: 4}}>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: adjust(10),
+                            fontWeight: 'bold',
+                            color: 'black',
+                          }}>
+                          Shellrean.Customer
+                        </Text>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: adjust(7),
+                            fontWeight: 'bold',
+                            color: GrayMedium,
+                          }}>
+                          Joined on 2022-11-22 13:30:39
+                        </Text>
+                      </View>
+                    </View>
+                    {/*  */}
+                    <View
+                      style={{
+                        marginRight: 4,
+                        marginVertical: 4,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      {[...Array(5).keys()].map(val => (
+                        <StarImage
+                          // onPress={() => setRatting(val + 1)}
+                          name="star"
+                          size={12}
+                          color={'#FACC15'}
+                          key={val}
+                        />
+                      ))}
+                    </View>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: '300',
+                        color: GrayMedium,
+                      }}>
+                      Reviewed on 2023-03-14 11:41:09
+                    </Text>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: '300',
+                        color: GrayMedium,
+                      }}>
+                      sangat bagus respon seler baik pengiriman juga cepat
+                    </Text>
                   </View>
                 </View>
               </View>
