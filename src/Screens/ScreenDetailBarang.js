@@ -33,6 +33,7 @@ import CardProduct from '../Component/CardProduct';
 import LoadingPage from '../Component/LoadingPage';
 import ModalComponent from '../Component/ModalComponent';
 import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
 import {getFromRedux} from '../Assets/API/GetRedux';
 import {useMemo} from 'react';
 import {useCallback} from 'react';
@@ -83,6 +84,7 @@ export default function ScreenDetailBarang(props) {
     },
   } = props;
   const token = useCallback(getFromRedux('token'), []);
+  const isFocus = useIsFocused();
 
   useEffect(() => {
     getDetailProduct(token, slug, barang => {
@@ -108,16 +110,24 @@ export default function ScreenDetailBarang(props) {
       getSummaryReview(
         token,
         detailBarang.data.id,
-        async summaryReview => await setSummaryReview(summaryReview.data),
+        async summaryReview =>
+          await setSummaryReview({
+            isLoading: false,
+            data: summaryReview.data.data,
+          }),
       );
 
       getReview(
         token,
         detailBarang.data.id,
-        async review => await setReview(review.data),
+        async review =>
+          await setReview({
+            isLoading: false,
+            data: review.data.data,
+          }),
       );
     }
-  }, []);
+  }, [isFocus, detailBarang]);
 
   const calculateStock = useMemo(() => {
     return calculateItemCart.stock - calculateItemCart.qty;
@@ -334,7 +344,9 @@ export default function ScreenDetailBarang(props) {
                         fontWeight: 'bold',
                         color: GrayMedium,
                       }}>
-                      3 out of 5
+                      {summaryReview.data !== null &&
+                        summaryReview.data.avg_rate}{' '}
+                      out of 5
                     </Text>
                   </View>
                   <Text
@@ -344,7 +356,9 @@ export default function ScreenDetailBarang(props) {
                       fontWeight: '400',
                       color: 'black',
                     }}>
-                    3 global ratings
+                    {summaryReview.data !== null &&
+                      summaryReview.data.total_review}{' '}
+                    global ratings
                   </Text>
                   {/* jumlah pengulas */}
                   <View
@@ -415,84 +429,197 @@ export default function ScreenDetailBarang(props) {
                       50%
                     </Text>
                   </View>
-                  {/* Summary */}
                   <View
                     style={{
-                      width: WidthScreen * 0.7,
-                      padding: 6,
-                      borderRadius: 4,
-                      marginVertical: adjust(8),
-                      backgroundColor: 'white',
-                      shadowColor: 'black',
-                      shadowOffset: {width: 1, height: 1},
-                      shadowOpacity: 0.2,
-                      shadowRadius: 10,
-                      elevation: 5,
+                      width: WidthScreen * 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 4,
                     }}>
-                    <View
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                      }}>
-                      <UserImage name="user-circle" size={20} color="black" />
-                      <View style={{marginLeft: 4}}>
-                        <Text
-                          style={{
-                            flex: 1,
-                            fontSize: adjust(10),
-                            fontWeight: 'bold',
-                            color: 'black',
-                          }}>
-                          Shellrean.Customer
-                        </Text>
-                        <Text
-                          style={{
-                            flex: 1,
-                            fontSize: adjust(7),
-                            fontWeight: 'bold',
-                            color: GrayMedium,
-                          }}>
-                          Joined on 2022-11-22 13:30:39
-                        </Text>
-                      </View>
-                    </View>
-                    {/*  */}
-                    <View
-                      style={{
-                        marginRight: 4,
-                        marginVertical: 4,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      {[...Array(5).keys()].map(val => (
-                        <StarImage
-                          // onPress={() => setRatting(val + 1)}
-                          name="star"
-                          size={12}
-                          color={'#FACC15'}
-                          key={val}
-                        />
-                      ))}
-                    </View>
                     <Text
                       style={{
-                        flex: 1,
                         fontSize: adjust(7),
-                        fontWeight: '300',
+                        fontWeight: 'bold',
                         color: GrayMedium,
                       }}>
-                      Reviewed on 2023-03-14 11:41:09
+                      3 star
                     </Text>
+                    <View
+                      style={{
+                        width: '50%',
+                        padding: 3,
+                        borderRadius: 10,
+                        backgroundColor: '#FACC15',
+                        marginHorizontal: 8,
+                      }}
+                    />
                     <Text
                       style={{
                         flex: 1,
                         fontSize: adjust(7),
-                        fontWeight: '300',
+                        fontWeight: 'bold',
                         color: GrayMedium,
                       }}>
-                      sangat bagus respon seler baik pengiriman juga cepat
+                      50%
                     </Text>
                   </View>
+                  <View
+                    style={{
+                      width: WidthScreen * 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 4,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      2 star
+                    </Text>
+                    <View
+                      style={{
+                        width: '50%',
+                        padding: 3,
+                        borderRadius: 10,
+                        backgroundColor: '#FACC15',
+                        marginHorizontal: 8,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      50%
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: WidthScreen * 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginVertical: 4,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      1 star
+                    </Text>
+                    <View
+                      style={{
+                        width: '50%',
+                        padding: 3,
+                        borderRadius: 10,
+                        backgroundColor: '#FACC15',
+                        marginHorizontal: 8,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: adjust(7),
+                        fontWeight: 'bold',
+                        color: GrayMedium,
+                      }}>
+                      50%
+                    </Text>
+                  </View>
+                  {/* Summary */}
+                  {review.data !== null && (
+                    <FlatList
+                      data={review.data}
+                      renderItem={({item}) => (
+                        <View
+                          style={{
+                            width: WidthScreen * 0.7,
+                            padding: 6,
+                            borderRadius: 4,
+                            marginVertical: adjust(8),
+                            backgroundColor: 'white',
+                            shadowColor: 'black',
+                            shadowOffset: {width: 1, height: 1},
+                            shadowOpacity: 0.2,
+                            shadowRadius: 10,
+                            elevation: 5,
+                          }}>
+                          <View
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                            }}>
+                            <UserImage
+                              name="user-circle"
+                              size={20}
+                              color="black"
+                            />
+                            <View style={{marginLeft: 4}}>
+                              <Text
+                                style={{
+                                  flex: 1,
+                                  fontSize: adjust(10),
+                                  fontWeight: 'bold',
+                                  color: 'black',
+                                }}>
+                                {item.name}
+                              </Text>
+                              <Text
+                                style={{
+                                  flex: 1,
+                                  fontSize: adjust(7),
+                                  fontWeight: 'bold',
+                                  color: GrayMedium,
+                                }}>
+                                Joined on {item.joined_date}
+                              </Text>
+                            </View>
+                          </View>
+                          {/*  */}
+                          <View
+                            style={{
+                              marginRight: 4,
+                              marginVertical: 4,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
+                            {[...Array(5).keys()].map(val => (
+                              <StarImage
+                                // onPress={() => setRatting(val + 1)}
+                                name="star"
+                                size={12}
+                                color={val + 1 <= item.rate ? '#FACC15' : Gray}
+                                key={val}
+                              />
+                            ))}
+                          </View>
+                          <Text
+                            style={{
+                              flex: 1,
+                              fontSize: adjust(7),
+                              fontWeight: '300',
+                              color: GrayMedium,
+                            }}>
+                            Reviewed on {item.reviewed_at}
+                          </Text>
+                          <Text
+                            style={{
+                              flex: 1,
+                              fontSize: adjust(7),
+                              fontWeight: '300',
+                              color: GrayMedium,
+                            }}>
+                            {item.body}
+                          </Text>
+                        </View>
+                      )}
+                    />
+                  )}
                 </View>
               </View>
             </View>
