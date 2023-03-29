@@ -5,6 +5,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  Linking,
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -12,6 +13,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Slider from '../Component/Slider';
 import {adjust, blueB2C, Gray, WidthScreen} from '../Assets/utils';
 import BookLogo from '../Assets/Images/book.png';
+import SipplahLogo from '../Assets/Images/sipplah.png';
+import StoreTraditionalLogo from '../Assets/Images/storeTraditional.png';
 import ClothesLogo from '../Assets/Images/clothes.png';
 import CosmeticsLogo from '../Assets/Images/cosmetics.png';
 import CupboardLogo from '../Assets/Images/cupboard.png';
@@ -80,7 +83,6 @@ const ScreenDashboard = props => {
       const lastData =
         dataMostLikeProduct.data[dataMostLikeProduct.data.length - 1]
           .created_at;
-      // console.log(lastData.replace(' ', '%20'));
       getMostLikeProduct(token, lastData, val => {
         setMuatBanyakLoading(false);
         setDataMostLikeProduct({
@@ -117,6 +119,82 @@ const ScreenDashboard = props => {
             <View>
               <Slider />
               <View style={{paddingHorizontal: adjust(5)}}>
+                {/* LINK BELANJA24 */}
+                <View>
+                  <Text
+                    style={{
+                      fontSize: adjust(11),
+                      color: 'black',
+                      fontWeight: 'bold',
+                    }}>
+                    Link Belanja24.com
+                  </Text>
+                  <View
+                    style={{
+                      width: WidthScreen * 0.4,
+                      flex: 1,
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      marginVertical: 10,
+                    }}>
+                    {[
+                      {name: 'SIPLah', srcImg: SipplahLogo},
+                      {name: 'Pasar Tradisional', srcImg: StoreTraditionalLogo},
+                    ].map((val, index) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() =>
+                            val.name === 'SIPLah'
+                              ? async () => {
+                                  console.log('lolololol');
+                                  const supported = await Linking.canOpenURL(
+                                    'https://siplah.belanja24.com/',
+                                  );
+
+                                  if (supported) {
+                                    await Linking.openURL(
+                                      'https://siplah.belanja24.com/',
+                                    );
+                                  } else {
+                                    console.error(
+                                      "Don't know how to open URI: " +
+                                        'https://siplah.belanja24.com/',
+                                    );
+                                  }
+                                }
+                              : navigation.navigate('Pencarian', {
+                                  searchQuery: val.name,
+                                })
+                          }
+                          key={index}
+                          style={{
+                            borderWidth: 1,
+                            paddingVertical: adjust(6),
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginVertical: adjust(2),
+                            marginHorizontal: adjust(4),
+                            borderRadius: 5,
+                            borderColor: Gray,
+                          }}>
+                          <Image
+                            source={val.srcImg}
+                            style={{width: adjust(30), height: adjust(30)}}
+                          />
+                          <Text
+                            style={{
+                              fontSize: adjust(8),
+                              textAlign: 'center',
+                              color: 'black',
+                            }}>
+                            {val.name}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
                 {/* KATEGORI CONTENT */}
                 <View>
                   <Text
@@ -137,15 +215,20 @@ const ScreenDashboard = props => {
                       // paddingHorizontal: adjust(5),
                     }}>
                     {[
-                      {name: 'Book', srcImg: BookLogo},
-                      {name: 'Clothes', srcImg: ClothesLogo},
-                      {name: 'Cosmetics', srcImg: CosmeticsLogo},
-                      {name: 'Personal Care', srcImg: CupboardLogo},
-                      {name: 'Electronic', srcImg: ElectronicLogo},
+                      {name: 'Buku', srcImg: BookLogo},
+                      {name: 'Clothing', srcImg: ClothesLogo},
+                      {name: 'Personal Care', srcImg: CosmeticsLogo},
+                      {name: 'Rumah & Dapur', srcImg: CupboardLogo},
+                      {name: 'Elektronik', srcImg: ElectronicLogo},
                       {name: 'Sports', srcImg: SportsLogo},
                     ].map((val, index) => {
                       return (
-                        <View
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate('Pencarian', {
+                              searchQuery: val.name,
+                            })
+                          }
                           key={index}
                           style={{
                             borderWidth: 1,
@@ -169,7 +252,7 @@ const ScreenDashboard = props => {
                             }}>
                             {val.name}
                           </Text>
-                        </View>
+                        </TouchableOpacity>
                       );
                     })}
                   </View>
@@ -337,7 +420,6 @@ const ScreenDashboard = props => {
               }}>
               <CardProduct
                 actions={() => {
-                  // console.log(item);
                   navigation.push('DetailBarang', {
                     slug: item.slug,
                   });

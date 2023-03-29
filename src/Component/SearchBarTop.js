@@ -71,7 +71,7 @@ const SearchBarTop = props => {
               borderTopRightRadius: 5,
               borderBottomRightRadius: 5,
             }}>
-            <Icon name="shopping-bag" />
+            <Icon name="shopping-bag" color={blueB2C} size={16} />
           </TouchableOpacity>
         </View>
       </View>
