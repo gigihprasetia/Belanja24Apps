@@ -243,3 +243,16 @@ export const getReview = async (token = '', id, callback) => {
       callback(false);
     });
 };
+
+export const getPlaza = async (token = '', callback) => {
+  await API.get(`guest-sys/fade/featured-plaza`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => callback(res))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};

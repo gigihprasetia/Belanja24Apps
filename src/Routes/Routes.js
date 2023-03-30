@@ -13,6 +13,7 @@ import ScreenPencarian from '../Screens/ScreenPencarian';
 import {SearchBar} from 'react-native-screens';
 import Slider from '../Component/Slider';
 import SearchBarTop from '../Component/SearchBarTop';
+import ScreenPlaza from '../Screens/ScreenPlaza';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -78,6 +79,13 @@ const Routes = () => {
           }}
           name="Pencarian"
           component={ScreenPencarian}
+        />
+        <stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name="Plaza"
+          component={ScreenPlaza}
         />
       </stack.Navigator>
     </NavigationContainer>

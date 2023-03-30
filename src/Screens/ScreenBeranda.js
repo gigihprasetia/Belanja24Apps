@@ -145,26 +145,8 @@ const ScreenDashboard = props => {
                         <TouchableOpacity
                           onPress={() =>
                             val.name === 'SIPLah'
-                              ? async () => {
-                                  console.log('lolololol');
-                                  const supported = await Linking.canOpenURL(
-                                    'https://siplah.belanja24.com/',
-                                  );
-
-                                  if (supported) {
-                                    await Linking.openURL(
-                                      'https://siplah.belanja24.com/',
-                                    );
-                                  } else {
-                                    console.error(
-                                      "Don't know how to open URI: " +
-                                        'https://siplah.belanja24.com/',
-                                    );
-                                  }
-                                }
-                              : navigation.navigate('Pencarian', {
-                                  searchQuery: val.name,
-                                })
+                              ? Linking.openURL('https://siplah.belanja24.com/')
+                              : navigation.navigate('Plaza')
                           }
                           key={index}
                           style={{
