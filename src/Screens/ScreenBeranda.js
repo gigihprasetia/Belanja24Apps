@@ -20,6 +20,7 @@ import CosmeticsLogo from '../Assets/Images/cosmetics.png';
 import CupboardLogo from '../Assets/Images/cupboard.png';
 import ElectronicLogo from '../Assets/Images/electronic.png';
 import SportsLogo from '../Assets/Images/sports.png';
+import AllLogo from '../Assets/Images/gridicon.png';
 import {
   getMostLikeProduct,
   getPopularProduct,
@@ -29,6 +30,8 @@ import CardProduct from '../Component/CardProduct';
 import {useSelector} from 'react-redux';
 import {useCallback} from 'react';
 import {getFromRedux} from '../Assets/API/GetRedux';
+import Marker from 'react-native-vector-icons/FontAwesome';
+import ModalComponent from '../Component/ModalComponent';
 
 const ScreenDashboard = props => {
   const [dataPopular, setDataPopular] = useState({
@@ -113,6 +116,37 @@ const ScreenDashboard = props => {
         height: '100%',
         backgroundColor: 'white',
       }}>
+      <ModalComponent
+        ButtonCustoms={open => (
+          <TouchableOpacity
+            onPress={() => open.open()}
+            style={{
+              position: 'absolute',
+              zIndex: 50,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: adjust(8),
+              borderRadius: 2,
+              backgroundColor: 'green',
+            }}>
+            <Marker name="map-marker" size={20} color="white" />
+            <Text style={{fontSize: adjust(10), marginLeft: 4, color: 'white'}}>
+              Jakarta Selatan
+            </Text>
+          </TouchableOpacity>
+        )}
+        isTransparent={true}
+        ContainerStyleContent={{
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        ContentCustoms={close => {
+          
+        }}
+      />
       <FlatList
         ListHeaderComponent={() => {
           return (
@@ -203,13 +237,16 @@ const ScreenDashboard = props => {
                       {name: 'Rumah & Dapur', srcImg: CupboardLogo},
                       {name: 'Elektronik', srcImg: ElectronicLogo},
                       {name: 'Sports', srcImg: SportsLogo},
+                      {name: 'Semua Kategory', srcImg: AllLogo},
                     ].map((val, index) => {
                       return (
                         <TouchableOpacity
                           onPress={() =>
-                            navigation.navigate('Pencarian', {
-                              searchQuery: val.name,
-                            })
+                            val.name === 'Semua Kategory'
+                              ? navigation.navigate('Categories')
+                              : navigation.navigate('Pencarian', {
+                                  searchQuery: val.name,
+                                })
                           }
                           key={index}
                           style={{

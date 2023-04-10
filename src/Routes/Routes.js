@@ -14,6 +14,7 @@ import {SearchBar} from 'react-native-screens';
 import Slider from '../Component/Slider';
 import SearchBarTop from '../Component/SearchBarTop';
 import ScreenPlaza from '../Screens/ScreenPlaza';
+import ScreenAllCategories from '../Screens/ScreenAllCategories';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -86,6 +87,13 @@ const Routes = () => {
           }}
           name="Plaza"
           component={ScreenPlaza}
+        />
+        <stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name="Categories"
+          component={ScreenAllCategories}
         />
       </stack.Navigator>
     </NavigationContainer>

@@ -26,6 +26,20 @@ export const getPopularStore = async (token = '', callback) => {
     .then(store => callback(store))
     .catch(err => console.log(err));
 };
+
+export const getCategories = async (token = '', callback) => {
+  await API.get('/accessible/data-master/categories?tail=no', {
+    params: {provider_type: 'ECOMMERCE'},
+    headers: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  })
+    .then(store => callback(store))
+    .catch(err => console.log(err));
+};
+
 export const getMostLikeProduct = async (token = '', load = '', callback) => {
   await API.get('/guest-sys/fade/browse-product', {
     params: {pointer: load, provider_type: 'ECOMMERCE'},
