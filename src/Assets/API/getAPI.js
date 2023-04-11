@@ -53,6 +53,30 @@ export const getMostLikeProduct = async (token = '', load = '', callback) => {
     })
     .catch(err => console.log(err));
 };
+
+export const getProvinces = async (token = '', callback) => {
+  await API.get(`/accessible/data-master/provinces`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(detail => callback(detail))
+    .catch(err => console.log(err));
+};
+
+export const getCity = async (token = '', load = '', callback) => {
+  await API.get(`/accessible/data-master/cities?province=${load}`, {
+    params: {pointer: load, provider_type: 'ECOMMERCE'},
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(store => {
+      callback(store);
+    })
+    .catch(err => console.log(err));
+};
+
 export const getDetailProduct = async (token = '', slug, callback) => {
   await API.get(`/guest-sys/fade/detail-product/${slug}`, {
     headers: {

@@ -203,3 +203,13 @@ export const postReview = async (token = '', data, callback) => {
     .then(val => callback(val.data))
     .catch(err => console.log(err));
 };
+
+export const postCityPreferenc = async (token = '', data, callback) => {
+  await API.post(`/customer-sys/profile/city-preference`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(val => callback(val.data.data))
+    .catch(err => console.log(err));
+};

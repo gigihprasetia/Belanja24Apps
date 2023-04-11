@@ -22,9 +22,11 @@ import ElectronicLogo from '../Assets/Images/electronic.png';
 import SportsLogo from '../Assets/Images/sports.png';
 import AllLogo from '../Assets/Images/gridicon.png';
 import {
+  getCity,
   getMostLikeProduct,
   getPopularProduct,
   getPopularStore,
+  getProvinces,
 } from '../Assets/API/getAPI';
 import CardProduct from '../Component/CardProduct';
 import {useSelector} from 'react-redux';
@@ -32,8 +34,16 @@ import {useCallback} from 'react';
 import {getFromRedux} from '../Assets/API/GetRedux';
 import Marker from 'react-native-vector-icons/FontAwesome';
 import ModalComponent from '../Component/ModalComponent';
+import {Picker} from '@react-native-picker/picker';
+import {postCityPreferenc} from '../Assets/API/postAPI';
 
 const ScreenDashboard = props => {
+  const [dataProvinces, setDataProvinces] = useState([]);
+  const [dataCity, setDataCity] = useState([]);
+  const [selectedValue, setSelectedValue] = React.useState(
+    'DAERAH ISTIMEWA YOGYAKARTA',
+  );
+  const [selectCity, setSelectCity] = useState('SLEMAN');
   const [dataPopular, setDataPopular] = useState({
     status: false,
     data: [],
@@ -119,7 +129,10 @@ const ScreenDashboard = props => {
       <ModalComponent
         ButtonCustoms={open => (
           <TouchableOpacity
-            onPress={() => open.open()}
+            onPress={() => {
+              open.open();
+              getProvinces(token, res => setDataProvinces(res.data.data));
+            }}
             style={{
               position: 'absolute',
               zIndex: 50,
@@ -144,7 +157,140 @@ const ScreenDashboard = props => {
           alignItems: 'center',
         }}
         ContentCustoms={close => {
-          
+          return (
+            <View
+              style={{
+                padding: adjust(10),
+                backgroundColor: 'white',
+                width: WidthScreen * 0.8,
+                alignItems: 'center',
+                borderRadius: adjust(5),
+              }}>
+              <Image
+                source={require('../Assets/Images/map.png')}
+                style={{
+                  width: adjust(100),
+                  height: adjust(100),
+                  resizeMode: 'contain',
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: adjust(13),
+                  fontWeight: '600',
+                  color: 'black',
+                }}>
+                Pilih Lokasi Belanja Kamu
+              </Text>
+              <Text
+                style={{
+                  fontSize: adjust(13),
+                  fontWeight: '300',
+                  color: 'black',
+                  textAlign: 'center',
+                }}>
+                Pilih lokasi kamu mau berbelanja, tenang kamu bisa pilih global
+                sehingga kamu bisa memilih barang selain dari kota yang dipilih
+              </Text>
+              <View
+                style={{
+                  width: '100%',
+                  borderRadius: 4,
+                  borderWidth: 1,
+                  marginVertical: 8,
+                  backgroundColor: Gray,
+                }}>
+                <Picker
+                  selectedValue={selectedValue}
+                  onValueChange={itemValue => {
+                    setSelectedValue(itemValue);
+                    getCity(token, itemValue, val =>
+                      setDataCity(val.data.data),
+                    );
+                  }}>
+                  {dataProvinces.map((val, index) => (
+                    <Picker.Item
+                      key={index}
+                      style={{fontSize: adjust(10), fontWeight: '400'}}
+                      label={val.provinsi}
+                      value={val.provinsi}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{
+                  width: '100%',
+                  borderRadius: 4,
+                  borderWidth: 1,
+                  marginVertical: 8,
+                  backgroundColor: Gray,
+                }}>
+                <Picker
+                  selectedValue={selectCity}
+                  onValueChange={itemValue => {
+                    setSelectCity(itemValue);
+                    // getCity(token, itemValue, val =>
+                    //   setDataCity(val.data.data),
+                    // );
+                  }}>
+                  {dataCity.map((val, index) => (
+                    <Picker.Item
+                      key={index}
+                      style={{fontSize: adjust(10), fontWeight: '400'}}
+                      label={val.kota}
+                      value={val.kota}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginTop: adjust(10),
+                }}>
+                <TouchableOpacity
+                  onPress={() => close.close()}
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: 'red',
+                    padding: adjust(10),
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginRight: adjust(2),
+                  }}>
+                  <Text style={{fontSize: adjust(10), color: 'red'}}>
+                    Tutup
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    postCityPreferenc(
+                      token,
+                      {
+                        preference_city: selectCity,
+                        preference_province: selectedValue,
+                      },
+                      val => console.log(val),
+                    )
+                  }
+                  style={{
+                    flex: 1,
+                    backgroundColor: blueB2C,
+                    padding: adjust(10),
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginLeft: adjust(2),
+                  }}>
+                  <Text style={{fontSize: adjust(10), color: 'white'}}>
+                    Mulai Berbelanja
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          );
         }}
       />
       <FlatList

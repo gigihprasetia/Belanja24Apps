@@ -65,11 +65,19 @@ const AddressForm = ({props}) => {
                 setSelectedValue(itemValue)
               }
               style={{
-                color: 'black',
+                color: Gray,
                 backgroundColor: 'white',
               }}>
-              <Picker.Item label="Rumah" value="Rumah" />
-              <Picker.Item label="Kantor" value="Kantor" />
+              <Picker.Item
+                style={styles.itemPicker}
+                label="Rumah"
+                value="Rumah"
+              />
+              <Picker.Item
+                style={styles.itemPicker}
+                label="Kantor"
+                value="Kantor"
+              />
             </Picker>
           </View>
           {/* bataas aman */}
@@ -290,6 +298,10 @@ const styles = StyleSheet.create({
     backgroundColor: Gray,
     fontSize: adjust(12),
     color: 'black',
+  },
+  itemPicker: {
+    fontSize: adjust(10),
+    fontWeight: '400',
   },
 });
 
