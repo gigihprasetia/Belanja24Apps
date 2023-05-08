@@ -15,6 +15,7 @@ import Slider from '../Component/Slider';
 import SearchBarTop from '../Component/SearchBarTop';
 import ScreenPlaza from '../Screens/ScreenPlaza';
 import ScreenAllCategories from '../Screens/ScreenAllCategories';
+import ScreenDetailToko from '../Screens/ScreenDetailToko';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -62,6 +63,13 @@ const Routes = () => {
           }}
           name="DetailBarang"
           component={ScreenDetailBarang}
+        />
+        <stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name="DetailStore"
+          component={ScreenDetailToko}
         />
         <stack.Screen
           // options={{headerShown: false}}

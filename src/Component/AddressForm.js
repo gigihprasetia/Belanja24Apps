@@ -16,6 +16,7 @@ import {getFromRedux} from '../Assets/API/GetRedux';
 
 const AddressForm = ({props}) => {
   const token = getFromRedux('token');
+  const {close, address} = props;
   const [postalAddress, setPosstalAddress] = useState([]);
   const [addres, setAddress] = useState({
     city: '',
@@ -30,6 +31,7 @@ const AddressForm = ({props}) => {
       initialValues={{
         address: '',
         recipient_name: '',
+        recipient_telp: '',
       }}
       onSubmit={values =>
         postAddress(
@@ -42,8 +44,9 @@ const AddressForm = ({props}) => {
             postal_code: addres.postal_code,
             province: addres.province,
             recipient_name: values.recipient_name,
+            phone_number: values.recipient_telp,
           },
-          props.address,
+          address,
         )
       }>
       {({errors, touched, values, handleBlur, handleChange, handleSubmit}) => (
@@ -65,7 +68,7 @@ const AddressForm = ({props}) => {
                 setSelectedValue(itemValue)
               }
               style={{
-                color: Gray,
+                color: 'black',
                 backgroundColor: 'white',
               }}>
               <Picker.Item
@@ -81,7 +84,7 @@ const AddressForm = ({props}) => {
             </Picker>
           </View>
           {/* bataas aman */}
-          <Text style={styles.label}>Nama</Text>
+          <Text style={styles.label}>Nama Penerima</Text>
           <TextInput
             placeholder="Bambang Irawan"
             textContentType="none"
@@ -93,6 +96,20 @@ const AddressForm = ({props}) => {
             value={values.recipient_name}
             onChangeText={handleChange('recipient_name')}
             onBlur={handleBlur('recipient_name')}
+            style={styles.input}
+          />
+          <Text style={styles.label}>Telp Penerima</Text>
+          <TextInput
+            placeholder="089889987667"
+            textContentType="none"
+            keyboardType="ascii-capable"
+            autoCapitalize="none"
+            returnKeyType="next"
+            placeholderTextColor={GrayMedium}
+            blurOnSubmit={false}
+            value={values.recipient_telp}
+            onChangeText={handleChange('recipient_telp')}
+            onBlur={handleBlur('recipient_telp')}
             style={styles.input}
           />
           <Text style={styles.label}>Alamat Lengkap</Text>
@@ -140,6 +157,7 @@ const AddressForm = ({props}) => {
                     justifyContent: 'space-between',
                     borderWidth: 1,
                     borderRadius: 4,
+                    paddingHorizontal: 4,
                     borderColor: blueB2C,
                     marginBottom: adjust(8),
                   }}>
@@ -160,18 +178,22 @@ const AddressForm = ({props}) => {
                       color: 'black',
                     }}
                   />
-                  <TouchableOpacity onPress={handleSubmit}>
+                  <TouchableOpacity
+                    style={{
+                      width: adjust(40),
+                      height: adjust(40),
+                      display: 'flex',
+                      borderRadius: 2,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: blueB2C,
+                    }}
+                    onPress={handleSubmit}>
                     <Text
                       style={{
-                        flex: 1,
                         display: 'flex',
                         textAlign: 'center',
-                        paddingHorizontal: adjust(8),
-                        paddingVertical: adjust(16),
-                        fontSize: adjust(12),
-                        backgroundColor: blueB2C,
-                        borderWidth: 1,
-                        borderColor: 'white',
+                        fontSize: adjust(13),
                         color: 'white',
                       }}>
                       Cari...
@@ -238,7 +260,7 @@ const AddressForm = ({props}) => {
               marginTop: adjust(10),
             }}>
             <TouchableOpacity
-              onPress={props.close.close}
+              onPress={close.close}
               style={{
                 flex: 1,
                 borderWidth: 1,

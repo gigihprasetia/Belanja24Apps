@@ -337,9 +337,24 @@ const ScreenAccount = props => {
                       {borderBottomWidth: 2, borderBottomColor: blueB2C},
                     ]}>
                     <View>
-                      <Text style={[styles.addres, {fontWeight: '400'}]}>
+                      <Text style={[styles.addres, {fontWeight: '600'}]}>
                         {item.name}
                       </Text>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          marginVertical: adjust(2),
+                        }}>
+                        <Text
+                          style={[
+                            styles.addres,
+                            {fontWeight: '400', marginRight: adjust(2)},
+                          ]}>
+                          {item.recipient_name}
+                        </Text>
+                        <Text style={styles.addres}>({item.phone_number})</Text>
+                      </View>
                       <Text style={styles.addres}>{item.shipping_address}</Text>
                       <View
                         style={{
@@ -365,6 +380,21 @@ const ScreenAccount = props => {
                       <Text style={[styles.addres, {fontWeight: '400'}]}>
                         {item.name}
                       </Text>
+                      <View
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          marginVertical: adjust(2),
+                        }}>
+                        <Text
+                          style={[
+                            styles.addres,
+                            {fontWeight: '400', marginRight: adjust(2)},
+                          ]}>
+                          {item.recipient_name}
+                        </Text>
+                        <Text style={styles.addres}>({item.phone_number})</Text>
+                      </View>
                       <Text style={styles.addres}>{item.shipping_address}</Text>
                       <View
                         style={{

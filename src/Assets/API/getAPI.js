@@ -1,9 +1,9 @@
 import {useSelector} from 'react-redux';
 import {API, API2} from './API';
 
-export const getPopularProduct = async (token = '', callback) => {
+export const getPopularProduct = async (token = '', slug, callback) => {
   await API.get('/guest-sys/fade/popular-product', {
-    params: {provider_type: 'ECOMMERCE'},
+    params: {provider_type: 'ECOMMERCE', preference_city: slug},
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -14,9 +14,21 @@ export const getPopularProduct = async (token = '', callback) => {
     })
     .catch(err => console.log(err));
 };
-export const getPopularStore = async (token = '', callback) => {
+export const getPopularStore = async (token = '', slug, callback) => {
   await API.get('/guest-sys/fade/featured-provider', {
-    params: {provider_type: 'ECOMMERCE'},
+    params: {provider_type: 'ECOMMERCE', preference_city: slug},
+    headers: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  })
+    .then(store => callback(store))
+    .catch(err => console.log(err));
+};
+
+export const getDetailStore = async (token = '', slug, callback) => {
+  await API.get(`guest-sys/fade/provider-detail?provider_id=${slug}`, {
     headers: {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -40,9 +52,18 @@ export const getCategories = async (token = '', callback) => {
     .catch(err => console.log(err));
 };
 
-export const getMostLikeProduct = async (token = '', load = '', callback) => {
+export const getMostLikeProduct = async (
+  token = '',
+  load = '',
+  slug,
+  callback,
+) => {
   await API.get('/guest-sys/fade/browse-product', {
-    params: {pointer: load, provider_type: 'ECOMMERCE'},
+    params: {
+      pointer: load,
+      provider_type: 'ECOMMERCE',
+      preference_city: slug,
+    },
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -86,6 +107,25 @@ export const getDetailProduct = async (token = '', slug, callback) => {
     .then(detail => callback(detail))
     .catch(err => console.log(err));
 };
+
+export const getDetailProductStore = async (
+  token = '',
+  slug,
+  page,
+  callback,
+) => {
+  await API2.get(
+    `/se-engine/proxy-search-product?attr=provider.id,tags&search=${slug}&page=${page}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then(detail => callback(detail))
+    .catch(err => console.log(err));
+};
+
 export const getRelatedProduct = async (token = '', product_id, callback) => {
   await API.get(`/guest-sys/fade/related-product`, {
     params: {product_id},
@@ -243,7 +283,7 @@ export const getHistoryShipping = async (token = '', id, callback) => {
 export const searchQueryProduct = async (token = '', query, callback) => {
   try {
     const results = await API2.get(
-      `/se-engine/proxy-search-product?attr=title,categories,tags&search=${query}`,
+      `/se-engine/proxy-search-product?attr=title,categories,tags&search=${query}&page=1`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

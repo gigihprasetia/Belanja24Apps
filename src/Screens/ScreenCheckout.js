@@ -5,15 +5,15 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Modal,
 } from 'react-native';
-import React from 'react';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {getFromRedux} from '../Assets/API/GetRedux';
 import {CheckShipping, getCheckout, gotoPayment} from '../Assets/API/postAPI';
 import {useState} from 'react';
 import LoadingPage from '../Component/LoadingPage';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {CommonActions} from '@react-navigation/native';
+import {CommonActions, useIsFocused} from '@react-navigation/native';
 import {StackActions} from '@react-navigation/native';
 import {
   adjust,
@@ -22,14 +22,16 @@ import {
   Gray,
   GrayMedium,
   Green,
-  HeightScreen,
   WidthScreen,
 } from '../Assets/utils';
 import {getAddresShipping, getPaymentMethod} from '../Assets/API/getAPI';
 import ModalComponent from '../Component/ModalComponent';
 import CompoCheckOut from '../Component/CompoCheckOut';
+import AddressForm from '../Component/AddressForm';
 
 const ScreenCheckout = ({navigation}) => {
+  const isFocus = useIsFocused();
+  const [modalVisible, setModalVisible] = useState(false);
   const [dataCheckout, setDataCheckout] = useState({
     status: false,
     data: [],
@@ -38,6 +40,7 @@ const ScreenCheckout = ({navigation}) => {
     status: false,
     data: [],
   });
+  const [address, setAddress] = useState({status: true, data: []});
 
   const [paymentMethod, setPaymentMethod] = useState([]);
 
@@ -61,22 +64,29 @@ const ScreenCheckout = ({navigation}) => {
   const [selectPayment, setSelectPayment] = useState(false);
 
   const token = getFromRedux('token');
+
   useEffect(() => {
     getPaymentMethod(token, res => {
       setPaymentMethod(res.data.data);
     });
     getAddresShipping(token, address => {
-      const addressSelect = address.filter(add => add.is_main === true);
-      // console.log(addressSelect, 'add');
-      setAddresDefault(addressSelect[0]);
-      setDataAddress({
-        status: true,
-        data: address,
-      });
-
+      if (address.length > 0) {
+        const addressSelect = address.filter(add => add.is_main === true);
+        setAddresDefault(addressSelect[0]);
+        setDataAddress({
+          status: true,
+          data: address,
+        });
+      } else {
+        setDataAddress({
+          status: true,
+          data: [],
+        });
+        setModalVisible(!modalVisible);
+      }
       getCheckout(token, res => {
+        // console.log(res, 'check');
         const data = res.data.data.map((val, index) => {
-          // console.log(val, 'check');
           return {
             indexSection: index,
             title: val.name,
@@ -91,7 +101,7 @@ const ScreenCheckout = ({navigation}) => {
         });
       });
     });
-  }, []);
+  }, [address.status, isFocus]);
 
   const viewShiping = section => {
     let adaShipping = false;
@@ -111,7 +121,6 @@ const ScreenCheckout = ({navigation}) => {
     };
   };
 
-  // console.log(navigation);
   const calculateTotalProduct = data => {
     const total = data.map(value => value.data);
     const totalResult = total
@@ -129,12 +138,79 @@ const ScreenCheckout = ({navigation}) => {
     return result;
   };
 
-  // console.log(paymentMethod);
-
   return !dataCheckout.status || !dataAddress.status ? (
     <LoadingPage />
   ) : (
     <SafeAreaView style={{padding: adjust(5), backgroundColor: 'white'}}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              padding: adjust(10),
+              backgroundColor: 'white',
+              width: WidthScreen * 0.8,
+              borderRadius: adjust(5),
+            }}>
+            <Text
+              style={{
+                fontSize: adjust(14),
+                fontWeight: '400',
+                color: 'black',
+              }}>
+              Alamat Pengiriman Tidak di Temukan
+            </Text>
+            <Text
+              style={{
+                fontSize: adjust(12),
+                fontWeight: '300',
+                marginTop: adjust(4),
+                color: GrayMedium,
+              }}>
+              Kamu belum memiliki alamat pengiriman, Yuk tambah alamat
+              pengiriman terlebih dahulu
+            </Text>
+            {/*  */}
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                marginTop: adjust(10),
+              }}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(!modalVisible)}
+                style={{
+                  flex: 1,
+                  borderRadius: 4,
+                  backgroundColor: 'red',
+                  padding: adjust(6),
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginRight: adjust(2),
+                }}>
+                <Text
+                  style={{
+                    fontSize: adjust(12),
+                    color: 'white',
+                  }}>
+                  Tutup
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <SectionList
         ListHeaderComponent={() => {
           return (
@@ -298,6 +374,63 @@ const ScreenCheckout = ({navigation}) => {
                     }}
                   />
                 )}
+                <ModalComponent
+                  ButtonCustoms={open => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() => open.open()}
+                        style={{
+                          borderColor: blueB2C,
+                          borderWidth: 1,
+                          marginTop: adjust(10),
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: adjust(5),
+                          borderRadius: adjust(5),
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: adjust(10),
+                            color: blueB2C,
+                            fontWeight: 'bold',
+                            // marginTop: adjust(5),
+                          }}>
+                          Tambah Alamat
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                  ContentCustoms={close => {
+                    return (
+                      <View
+                        style={{
+                          padding: adjust(10),
+                          backgroundColor: 'white',
+                          width: WidthScreen * 0.9,
+                          borderRadius: adjust(5),
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: adjust(14),
+                            fontWeight: 'bold',
+                            color: blueB2C,
+                          }}>
+                          Tambah Alamat Pengiriman
+                        </Text>
+                        <AddressForm
+                          props={{close: close, address: setAddress}}
+                        />
+                      </View>
+                    );
+                  }}
+                  isTransparent={false}
+                  ContainerStyleContent={{
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                />
               </View>
             </View>
           );
@@ -346,16 +479,35 @@ const ScreenCheckout = ({navigation}) => {
         renderSectionHeader={({section}) => {
           // console.log(section);
           return (
-            <CompoCheckOut
-              section={section}
-              addressDefault={addressDefault}
-              dataShipping={dataShipping}
-              setDataShipping={setDataShipping}
-              selectShipping={selectShipping}
-              setSelectShipping={setSelectShipping}
-              dataCheckout={dataCheckout}
-              setDataCheckout={setDataCheckout}
-            />
+            // pilih pengiriman
+            dataAddress.data.length > 0 ? (
+              <CompoCheckOut
+                section={section}
+                addressDefault={addressDefault}
+                dataShipping={dataShipping}
+                setDataShipping={setDataShipping}
+                selectShipping={selectShipping}
+                setSelectShipping={setSelectShipping}
+                dataCheckout={dataCheckout}
+                setDataCheckout={setDataCheckout}
+              />
+            ) : (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: Gray,
+                  padding: adjust(5),
+                  borderRadius: adjust(3),
+                }}>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: adjust(10),
+                    fontWeight: 'bold',
+                  }}>
+                  Pilih Pengiriman
+                </Text>
+              </TouchableOpacity>
+            )
           );
         }}
         ListFooterComponent={() => {

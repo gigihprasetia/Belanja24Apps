@@ -117,19 +117,22 @@ export const postPostalCode = async (params, data) => {
       if (res.data.message === 'Approved') {
         data(res.data.data);
       }
-      console.log();
     })
     .catch(err => console.log(err, 'error'));
 };
 
-export const postAddress = async (token = '', params, data) => {
+export const postAddress = async (token = '', params, address) => {
   await API.post('customer-sys/profile/address', params, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then(res => data({data: [], status: false}))
-    .catch(err => console.log(err));
+    .then(res => {
+      if (res.data.message === 'Approved') {
+        address({status: false, data: []});
+      }
+    })
+    .catch(err => console.log(err, 'error'));
 };
 export const CheckShipping = async (token = '', data, callback) => {
   await API.post(

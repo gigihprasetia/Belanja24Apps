@@ -662,7 +662,7 @@ export default function ScreenDetailBarang(props) {
                 backgroundColor: blueB2C,
                 borderRadius: adjust(5),
               }}>
-              <Text style={{color: 'white'}}> Pesan Sekarang </Text>
+              <Text style={{color: 'white'}}> Pesan Sekarang 1</Text>
             </TouchableOpacity>
           );
         }}

@@ -48,6 +48,7 @@ const ScreenDashboard = props => {
     status: false,
     data: [],
   });
+
   const [dataPopularStore, setDataPopularStore] = useState({
     status: false,
     data: [],
@@ -66,27 +67,27 @@ const ScreenDashboard = props => {
   } = useSelector(state => state);
 
   useEffect(() => {
-    getPopularProduct(token, val => {
+    getPopularProduct(token, selectCity, val => {
       setDataPopular({
         status: true,
         data: val.data.data,
       });
     });
 
-    getPopularStore(token, val => {
+    getPopularStore(token, selectCity, val => {
       setDataPopularStore({
         status: true,
         data: val.data.data,
       });
     });
 
-    getMostLikeProduct(token, '', val => {
+    getMostLikeProduct(token, '', selectCity, val => {
       setDataMostLikeProduct({
         status: true,
         data: val.data.data,
       });
     });
-  }, []);
+  }, [selectCity]);
 
   const LoadMoreProduct = () => {
     setMuatBanyakLoading(true);
@@ -145,7 +146,7 @@ const ScreenDashboard = props => {
             }}>
             <Marker name="map-marker" size={20} color="white" />
             <Text style={{fontSize: adjust(10), marginLeft: 4, color: 'white'}}>
-              Jakarta Selatan
+              Global
             </Text>
           </TouchableOpacity>
         )}
@@ -439,26 +440,63 @@ const ScreenDashboard = props => {
                     style={{
                       marginVertical: 10,
                     }}>
-                    {dataPopular.data.map(val => {
-                      return (
-                        <View
-                          key={val.id}
-                          style={{
-                            width: WidthScreen * 0.45,
+                    {dataPopular.data.length > 0 ? (
+                      dataPopular.data.map(val => {
+                        return (
+                          <View
+                            key={val.id}
+                            style={{
+                              width: WidthScreen * 0.45,
 
-                            padding: adjust(5),
+                              padding: adjust(5),
+                            }}>
+                            <CardProduct
+                              actions={() => {
+                                navigation.push('DetailBarang', {
+                                  slug: val.slug,
+                                });
+                              }}
+                              {...val}
+                            />
+                          </View>
+                        );
+                      })
+                    ) : (
+                      <View
+                        style={{
+                          width: WidthScreen * 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: 4,
+                          // backgroundColor: 'blue',
+                        }}>
+                        <View
+                          style={{
+                            width: WidthScreen * 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
                           }}>
-                          <CardProduct
-                            actions={() => {
-                              navigation.push('DetailBarang', {
-                                slug: val.slug,
-                              });
+                          <Image
+                            source={require('../Assets/Images/popularProducts.png')}
+                            style={{
+                              width: adjust(100),
+                              height: adjust(100),
+                              resizeMode: 'contain',
                             }}
-                            {...val}
                           />
+                          <Text
+                            style={{
+                              fontSize: adjust(13),
+                              fontWeight: '300',
+                              textAlign: 'center',
+                              color: 'black',
+                            }}>
+                            Oops tidak ada produk pada kota yang dipilih, coba
+                            kota lain yuk
+                          </Text>
                         </View>
-                      );
-                    })}
+                      </View>
+                    )}
                   </ScrollView>
                 </View>
                 {/* TOKO POPULAR CONTENT */}
@@ -478,84 +516,126 @@ const ScreenDashboard = props => {
                     style={{
                       marginVertical: 10,
                     }}>
-                    {dataPopularStore.data.map(val => {
-                      return (
-                        <View
-                          key={val.id}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: Gray,
-                            padding: adjust(5),
-                            borderRadius: adjust(5),
-                            margin: adjust(5),
-                          }}>
-                          <View
+                    {dataPopularStore.data.length > 0 ? (
+                      dataPopularStore.data.map(val => {
+                        return (
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate('DetailStore', {
+                                slug: val.id,
+                              })
+                            }
+                            key={val.id}
                             style={{
-                              flex: 1,
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              borderWidth: 1,
+                              borderColor: Gray,
+                              padding: adjust(5),
+                              borderRadius: adjust(5),
+                              margin: adjust(5),
                             }}>
                             <View
                               style={{
-                                width: adjust(30),
-                                height: adjust(30),
-                                borderRadius: 100,
-                                padding: 10,
-                                marginRight: adjust(5),
-                                borderWidth: 0.5,
-                                borderColor: Gray,
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
                               }}>
-                              <Image
+                              <View
                                 style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  resizeMode: 'cover',
-                                }}
-                                source={{uri: val.ava}}
-                              />
+                                  width: adjust(30),
+                                  height: adjust(30),
+                                  borderRadius: 100,
+                                  padding: 10,
+                                  marginRight: adjust(5),
+                                  borderWidth: 0.5,
+                                  borderColor: Gray,
+                                }}>
+                                <Image
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    resizeMode: 'cover',
+                                  }}
+                                  source={{uri: val.ava}}
+                                />
+                              </View>
+                              <View>
+                                <Text
+                                  style={{
+                                    fontSize: adjust(9),
+                                    color: 'black',
+                                    fontWeight: 'bold',
+                                  }}>
+                                  {val.name}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: adjust(8),
+                                    color: 'black',
+                                  }}>
+                                  {val.total_product} Product ditawarkan
+                                </Text>
+                              </View>
                             </View>
-                            <View>
+                            <View
+                              style={{
+                                flex: 1,
+                                alignItems: 'center',
+                                marginTop: adjust(3),
+                              }}>
                               <Text
                                 style={{
-                                  fontSize: adjust(9),
+                                  fontSize: adjust(7),
                                   color: 'black',
-                                  fontWeight: 'bold',
                                 }}>
-                                {val.name}
+                                {val.city}
                               </Text>
                               <Text
                                 style={{
-                                  fontSize: adjust(8),
+                                  fontSize: adjust(7),
                                   color: 'black',
                                 }}>
-                                {val.total_product} Product ditawarkan
+                                Bergabung {val.created_at}
                               </Text>
                             </View>
-                          </View>
-                          <View
+                          </TouchableOpacity>
+                        );
+                      })
+                    ) : (
+                      <View
+                        style={{
+                          width: WidthScreen * 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: 4,
+                          // backgroundColor: 'blue',
+                        }}>
+                        <View
+                          style={{
+                            width: WidthScreen * 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}>
+                          <Image
+                            source={require('../Assets/Images/popularProducts.png')}
                             style={{
-                              flex: 1,
-                              alignItems: 'center',
-                              marginTop: adjust(3),
+                              width: adjust(100),
+                              height: adjust(100),
+                              resizeMode: 'contain',
+                            }}
+                          />
+                          <Text
+                            style={{
+                              fontSize: adjust(13),
+                              fontWeight: '300',
+                              textAlign: 'center',
+                              color: 'black',
                             }}>
-                            <Text
-                              style={{
-                                fontSize: adjust(7),
-                                color: 'black',
-                              }}>
-                              {val.city}
-                            </Text>
-                            <Text
-                              style={{
-                                fontSize: adjust(7),
-                                color: 'black',
-                              }}>
-                              Bergabung {val.created_at}
-                            </Text>
-                          </View>
+                            Oops tidak ada produk pada kota yang dipilih, coba
+                            kota lain yuk
+                          </Text>
                         </View>
-                      );
-                    })}
+                      </View>
+                    )}
                   </ScrollView>
                 </View>
 
@@ -568,6 +648,42 @@ const ScreenDashboard = props => {
                   }}>
                   Produk Yang Mungkin Kamu Suka
                 </Text>
+                {dataMostLikeProduct.data.length > 0 ? null : (
+                  <View
+                    style={{
+                      width: WidthScreen * 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: 4,
+                      // backgroundColor: 'blue',
+                    }}>
+                    <View
+                      style={{
+                        width: WidthScreen * 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}>
+                      <Image
+                        source={require('../Assets/Images/popularProducts.png')}
+                        style={{
+                          width: adjust(100),
+                          height: adjust(100),
+                          resizeMode: 'contain',
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: adjust(13),
+                          fontWeight: '300',
+                          textAlign: 'center',
+                          color: 'black',
+                        }}>
+                        Oops tidak ada produk pada kota yang dipilih, coba kota
+                        lain yuk
+                      </Text>
+                    </View>
+                  </View>
+                )}
               </View>
             </View>
           );
@@ -575,12 +691,11 @@ const ScreenDashboard = props => {
         numColumns={2}
         data={dataMostLikeProduct.data}
         renderItem={({item}) => {
-          return (
+          return dataMostLikeProduct.data.length > 0 ? (
             <View
               key={item.id}
               style={{
                 width: '50%',
-
                 padding: adjust(5),
               }}>
               <CardProduct
@@ -592,7 +707,7 @@ const ScreenDashboard = props => {
                 {...item}
               />
             </View>
-          );
+          ) : null;
         }}
         keyExtractor={item => item.id}
         ListFooterComponent={() => {
