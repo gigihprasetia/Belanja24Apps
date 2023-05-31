@@ -164,6 +164,46 @@ export const getDataCart = async (token = '', callback) => {
     .then(profile => callback(profile.data.data))
     .catch(err => console.log(err));
 };
+export const getEstablished = async (token = '', callback) => {
+  await API2.get(`/chat-engine/cs/connection/established`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(profile => callback(profile.data.data))
+    .catch(err => console.log(err));
+};
+
+export const getConection = async (token = '', id, callback) => {
+  await API2.get(`chat-engine/cs/connection?seller_id=${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(data => callback(data))
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
+export const getMessage = async (token = '', data, callback) => {
+  await API2.get(
+    `chat-engine/cs/messages?connection_id=${data.id}&pointer_type=next&pointer=${data.pointer_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
 
 export const getPaymentMethod = async (token = '', callback) => {
   await API.get(`/customer-sys/data-master/payment-methods`, {

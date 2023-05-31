@@ -1,5 +1,5 @@
-import {View, Text, Image} from 'react-native';
 import React from 'react';
+import {View, Image} from 'react-native';
 import Slick from 'react-native-slick';
 import {adjust, HeightScreen} from '../Assets/utils';
 

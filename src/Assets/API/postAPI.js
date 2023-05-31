@@ -87,6 +87,21 @@ export const getCheckout = async (token = '', callback) => {
     });
 };
 
+export const postMessage = async (token, data, callback) => {
+  await API2.post('/chat-engine/cs/messages/sent', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(response => {
+      callback(response);
+    })
+    .catch(err => {
+      console.log(err);
+      callback(false);
+    });
+};
+
 /////AUTHENTICATION///////////
 
 export const loginBasic = async (data, callback) => {

@@ -1,11 +1,9 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {adjust, formatter, Gray} from '../Assets/utils';
+import {adjust, Gray} from '../Assets/utils';
 
 const CardProduct = props => {
-  // console.log(props, 'props');
   const {actions} = props;
-  // console.log(props);
 
   return (
     <TouchableOpacity

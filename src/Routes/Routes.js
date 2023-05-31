@@ -16,6 +16,8 @@ import SearchBarTop from '../Component/SearchBarTop';
 import ScreenPlaza from '../Screens/ScreenPlaza';
 import ScreenAllCategories from '../Screens/ScreenAllCategories';
 import ScreenDetailToko from '../Screens/ScreenDetailToko';
+import ScreenChat from '../Screens/ScreenChat';
+import ScreenPersonalChat from '../Screens/ScreenPersonalChat';
 const stack = createNativeStackNavigator();
 
 const Routes = () => {
@@ -70,6 +72,20 @@ const Routes = () => {
           }}
           name="DetailStore"
           component={ScreenDetailToko}
+        />
+        <stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name="Chat"
+          component={ScreenChat}
+        />
+        <stack.Screen
+          options={{
+            headerShown: false,
+          }}
+          name="PersonalChat"
+          component={ScreenPersonalChat}
         />
         <stack.Screen
           // options={{headerShown: false}}

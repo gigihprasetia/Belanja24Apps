@@ -7,7 +7,9 @@ import {
   FlatList,
   TouchableOpacity,
   Button,
+  Modal,
   Pressable,
+  StyleSheet,
 } from 'react-native';
 import React from 'react';
 import {useEffect} from 'react';
@@ -37,10 +39,14 @@ import {useIsFocused} from '@react-navigation/native';
 import {getFromRedux} from '../Assets/API/GetRedux';
 import {useMemo} from 'react';
 import {useCallback} from 'react';
-import {addToCart} from '../Assets/API/postAPI';
+import {addToCart, beliSekarang} from '../Assets/API/postAPI';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import StarImage from 'react-native-vector-icons/FontAwesome';
 import UserImage from 'react-native-vector-icons/FontAwesome5';
+import Cart from 'react-native-vector-icons/MaterialIcons';
+import Chat from 'react-native-vector-icons/Ionicons';
+import ModalPayProduct from '../Component/ModalPayProduct';
+import Bag from 'react-native-vector-icons/SimpleLineIcons';
 
 export default function ScreenDetailBarang(props) {
   const [detailBarang, setDetailBarang] = useState({
@@ -70,7 +76,8 @@ export default function ScreenDetailBarang(props) {
     data: null,
   });
 
-  // https://api.belanja24.com/api/v1/guest-sys/fade/detail-product/projection-screen-smr-300225q-63f46cd3e7bff
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalBuy, setModalBuy] = useState(false);
 
   const {
     route: {
@@ -127,7 +134,7 @@ export default function ScreenDetailBarang(props) {
           }),
       );
     }
-  }, [isFocus, detailBarang]);
+  }, [isFocus, detailBarang.id]);
 
   const calculateStock = useMemo(() => {
     return calculateItemCart.stock - calculateItemCart.qty;
@@ -247,25 +254,30 @@ export default function ScreenDetailBarang(props) {
                     Info Toko
                   </Text>
                 </View>
+                {/* Card Store */}
                 <View
                   style={{
+                    width: WidthScreen * 0.9,
+                    borderColor: GrayMedium,
+                    paddingHorizontal: adjust(7),
+                    paddingVertical: adjust(2),
+                    marginVertical: adjust(6),
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    marginVertical: adjust(5),
+                    justifyContent: 'space-between',
                   }}>
-                  <View
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('DetailStore', {
+                        slug: detailBarang.data.provider.id,
+                      })
+                    }
                     style={{
-                      borderWidth: 1,
-                      borderColor: GrayMedium,
-                      paddingHorizontal: adjust(7),
-                      paddingVertical: adjust(5),
+                      width: '50%',
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
-                      borderColor: GrayMedium,
-                      borderRadius: adjust(10),
-                      justifyContent: 'center',
                     }}>
                     <Image
                       style={{
@@ -275,20 +287,81 @@ export default function ScreenDetailBarang(props) {
                       }}
                       source={{uri: detailBarang.data.provider.ava}}
                     />
-                    <View>
+                    <View
+                      style={{
+                        width: '100%',
+                        height: adjust(50),
+                        padding: adjust(4),
+                      }}>
                       <Text
                         style={{
-                          fontSize: adjust(9),
+                          fontSize: adjust(13),
                           color: GrayMedium,
+                          fontWeight: '800',
                         }}>
                         {detailBarang.data.provider.name}
                       </Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}>
+                        <Bag name="bag" size={20} color={'black'} />
+                        <Text
+                          style={{
+                            fontSize: adjust(9),
+                            color: GrayMedium,
+                          }}>
+                          Kunjungi toko
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={{width: '50%'}}>
+                    <View>
                       <Text
                         style={{
-                          fontSize: adjust(8),
+                          fontSize: adjust(10),
                           color: GrayMedium,
                         }}>
-                        {detailBarang.data.provider.city}
+                        Penilaian{' '}
+                        <Text
+                          style={{
+                            fontSize: adjust(10),
+                            color: blueB2C,
+                          }}>
+                          {detailBarang.data.provider.total_review}
+                        </Text>
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: adjust(10),
+                          color: GrayMedium,
+                        }}>
+                        Produk{' '}
+                        <Text
+                          style={{
+                            fontSize: adjust(10),
+                            color: blueB2C,
+                          }}>
+                          {detailBarang.data.provider.total_product}
+                        </Text>
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: adjust(10),
+                          color: GrayMedium,
+                        }}>
+                        Bergabung{' '}
+                        <Text
+                          style={{
+                            fontSize: adjust(10),
+                            color: blueB2C,
+                          }}>
+                          {detailBarang.data.provider.created_at}
+                        </Text>
                       </Text>
                     </View>
                   </View>
@@ -649,370 +722,466 @@ export default function ScreenDetailBarang(props) {
         }}
         keyExtractor={item => item.id}
       />
-      <ModalComponent
-        ButtonCustoms={({open}) => {
-          return (
-            <TouchableOpacity
-              onPress={open}
+      {token !== '' ? (
+        <View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}>
+            <View
               style={{
-                display: 'flex',
+                flex: 1,
+                backgroundColor: 'rgba(0,0,0,0.5)',
                 justifyContent: 'center',
                 alignItems: 'center',
-                paddingVertical: adjust(10),
-                backgroundColor: blueB2C,
-                borderRadius: adjust(5),
               }}>
-              <Text style={{color: 'white'}}> Pesan Sekarang 1</Text>
-            </TouchableOpacity>
-          );
-        }}
-        isTransparent={true}
-        ContainerStyleContent={{
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        ContentCustoms={({close}) => {
-          return token === '' ? (
-            <View
-              style={{
-                padding: adjust(10),
-                backgroundColor: 'white',
-                width: WidthScreen * 0.8,
-                borderRadius: adjust(5),
-              }}>
-              <Text
-                style={{
-                  fontSize: adjust(12),
-                  fontWeight: 'bold',
-                  color: GrayMedium,
-                  marginBottom: adjust(10),
-                }}>
-                Login Untuk Mulai Berbelanja?
-              </Text>
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <TouchableOpacity
-                  onPress={close}
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: 'red',
-                    padding: adjust(5),
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginRight: adjust(2),
-                  }}>
-                  <Text style={{fontSize: adjust(10), color: 'red'}}>
-                    Cencel
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Account')}
-                  style={{
-                    flex: 1,
-                    backgroundColor: blueB2C,
-                    padding: adjust(5),
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginLeft: adjust(2),
-                  }}>
-                  <Text style={{fontSize: adjust(10), color: 'white'}}>
-                    Ke Menu Login
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View
-              style={{
-                padding: adjust(10),
-                backgroundColor: 'white',
-                width: WidthScreen * 0.8,
-                borderRadius: adjust(5),
-              }}>
-              {/* IMAGES PREVIEW */}
               <View
                 style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  padding: adjust(10),
+                  backgroundColor: 'white',
+                  width: WidthScreen * 0.8,
+                  borderRadius: adjust(5),
                 }}>
-                <Image
-                  style={{
-                    width: WidthScreen * 0.5,
-                    height: HeightScreen * 0.3,
-                    resizeMode: 'contain',
-                  }}
-                  source={{uri: detailBarang.data.medias[0]}}
-                />
-              </View>
-              {/* STOCK AND HARGA */}
-              <View
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginVertical: adjust(10),
-                }}>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontSize: adjust(13),
-                  }}>
-                  {formatter(calculatePrice)}
-                </Text>
-                <Text
-                  style={{
-                    color: GrayMedium,
-                    fontSize: adjust(10),
-                  }}>
-                  stock {calculateStock}
-                </Text>
-              </View>
-
-              {/* ATUR JUMLAH */}
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <View style={{flex: 1}}>
-                  <Text
-                    style={{
-                      color: 'black',
-                      fontSize: adjust(10),
-                      marginVertical: adjust(5),
-                    }}>
-                    Atur Jumlah
-                  </Text>
-                </View>
+                {/* IMAGES PREVIEW */}
                 <View
                   style={{
                     display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    style={{
+                      width: WidthScreen * 0.5,
+                      height: HeightScreen * 0.3,
+                      resizeMode: 'contain',
+                    }}
+                    source={{uri: detailBarang.data.medias[0]}}
+                  />
+                </View>
+                {/* STOCK AND HARGA */}
+                <View
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    flex: 1,
+                    marginVertical: adjust(10),
                   }}>
-                  <Pressable
-                    onPress={() => {
-                      if (calculateItemCart.qty === 1) {
-                      } else {
-                        setCalculateItemCart({
-                          ...calculateItemCart,
-                          qty: calculateItemCart.qty - 1,
-                        });
-                      }
-                    }}
+                  <Text
                     style={{
-                      backgroundColor: 'red',
-                      paddingVertical: adjust(5),
-                      paddingHorizontal: adjust(10),
-                      borderRadius: adjust(5),
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      color: 'black',
+                      fontSize: adjust(13),
                     }}>
-                    <Text style={{color: 'white', fontSize: adjust(10)}}>
-                      -
-                    </Text>
-                  </Pressable>
-                  <View
+                    {formatter(calculatePrice)}
+                  </Text>
+                  <Text
                     style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      color: GrayMedium,
+                      fontSize: adjust(10),
                     }}>
+                    stock {calculateStock}
+                  </Text>
+                </View>
+
+                {/* ATUR JUMLAH */}
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <View style={{flex: 1}}>
                     <Text
                       style={{
-                        fontWeight: 'bold',
                         color: 'black',
                         fontSize: adjust(10),
+                        marginVertical: adjust(5),
                       }}>
-                      {calculateItemCart.qty}
+                      Atur Jumlah
                     </Text>
                   </View>
-                  <Pressable
-                    onPress={() => {
-                      if (calculateItemCart.stock === calculateItemCart.qty) {
-                      } else {
-                        setCalculateItemCart({
-                          ...calculateItemCart,
-                          qty: calculateItemCart.qty + 1,
-                        });
-                      }
-                    }}
+                  <View
                     style={{
-                      backgroundColor: blueB2C,
-                      paddingVertical: adjust(5),
-                      paddingHorizontal: adjust(10),
-                      borderRadius: adjust(5),
-                      flex: 1,
-                      justifyContent: 'center',
+                      display: 'flex',
+                      flexDirection: 'row',
                       alignItems: 'center',
+                      flex: 1,
                     }}>
-                    <Text style={{color: 'white', fontSize: adjust(10)}}>
-                      +
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-              {/* BUTTON MASUKAN KERANJANG DAN BATAL */}
-              <ModalComponent
-                ButtonCustoms={props => {
-                  const SubModal = props.open;
-                  return (
-                    <TouchableOpacity
+                    <Pressable
                       onPress={() => {
-                        addToCart(
-                          token,
-                          {
-                            product_id: detailBarang.data.id,
-                            qty: calculateItemCart.qty,
-                          },
-                          response => {
-                            if (!response) {
-                              alert('terjadi kesalahan');
-                            } else {
-                              SubModal();
-                            }
-                          },
-                        );
+                        if (calculateItemCart.qty === 1) {
+                        } else {
+                          setCalculateItemCart({
+                            ...calculateItemCart,
+                            qty: calculateItemCart.qty - 1,
+                          });
+                        }
                       }}
                       style={{
-                        borderWidth: 1,
-                        borderColor: blueB2C,
+                        backgroundColor: 'red',
+                        paddingVertical: adjust(5),
+                        paddingHorizontal: adjust(10),
                         borderRadius: adjust(5),
-                        marginTop: adjust(15),
+                        flex: 1,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        paddingVertical: adjust(5),
                       }}>
-                      <Text
-                        style={{
-                          color: blueB2C,
-                          fontWeight: 'bold',
-                          fontSize: adjust(10),
-                        }}>
-                        + Keranjang
+                      <Text style={{color: 'white', fontSize: adjust(10)}}>
+                        -
                       </Text>
-                    </TouchableOpacity>
-                  );
-                }}
-                isTransparent={true}
-                ContainerStyleContent={{
-                  flex: 1,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  // backgroundColor: 'red',
-                }}
-                ContentCustoms={props => {
-                  const subClose = props.close;
-                  return (
+                    </Pressable>
                     <View
                       style={{
-                        backgroundColor: 'white',
-                        width: WidthScreen * 0.8,
-                        display: 'flex',
+                        flex: 1,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        padding: adjust(5),
-                        borderRadius: adjust(5),
                       }}>
-                      <MaterialIcons
-                        name="add-shopping-cart"
-                        size={adjust(40)}
-                        color={Green}
-                      />
                       <Text
                         style={{
-                          color: GrayMedium,
                           fontWeight: 'bold',
+                          color: 'black',
                           fontSize: adjust(10),
-                          marginVertical: adjust(10),
                         }}>
-                        Product Berhasil Dimasukan Ke Dalam Keranjang
+                        {calculateItemCart.qty}
                       </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => {
+                        if (calculateItemCart.stock === calculateItemCart.qty) {
+                        } else {
+                          setCalculateItemCart({
+                            ...calculateItemCart,
+                            qty: calculateItemCart.qty + 1,
+                          });
+                        }
+                      }}
+                      style={{
+                        backgroundColor: blueB2C,
+                        paddingVertical: adjust(5),
+                        paddingHorizontal: adjust(10),
+                        borderRadius: adjust(5),
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text style={{color: 'white', fontSize: adjust(10)}}>
+                        +
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+                {/* BUTTON MASUKAN KERANJANG DAN BATAL */}
+                <ModalComponent
+                  ButtonCustoms={props => {
+                    const SubModal = props.open;
+                    return (
+                      <TouchableOpacity
+                        onPress={() => {
+                          addToCart(
+                            token,
+                            {
+                              product_id: detailBarang.data.id,
+                              qty: calculateItemCart.qty,
+                              warehouse_id: detailBarang.data.warehouse_id,
+                            },
+                            response => {
+                              if (!response) {
+                                alert(
+                                  'terjadi kesalahan coba kembali setelah beberapa saat',
+                                );
+                              } else {
+                                SubModal();
+                              }
+                            },
+                          );
+                        }}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: blueB2C,
+                          borderRadius: adjust(5),
+                          marginTop: adjust(15),
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          paddingVertical: adjust(5),
+                        }}>
+                        <Text
+                          style={{
+                            color: blueB2C,
+                            fontWeight: 'bold',
+                            fontSize: adjust(10),
+                          }}>
+                          + Keranjang
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                  isTransparent={true}
+                  ContainerStyleContent={{
+                    flex: 1,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // backgroundColor: 'red',
+                  }}
+                  ContentCustoms={props => {
+                    const subClose = props.close;
+                    return (
                       <View
                         style={{
+                          backgroundColor: 'white',
+                          width: WidthScreen * 0.8,
                           display: 'flex',
-                          flexDirection: 'row',
-                          // justifyContent: 'space-between',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: adjust(5),
+                          borderRadius: adjust(5),
                         }}>
-                        <TouchableOpacity
-                          onPress={() => subClose()}
+                        <MaterialIcons
+                          name="add-shopping-cart"
+                          size={adjust(40)}
+                          color={Green}
+                        />
+                        <Text
                           style={{
-                            flex: 1,
-                            borderWidth: 1,
-                            borderColor: 'red',
-                            padding: adjust(1),
-                            borderRadius: adjust(5),
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginRight: adjust(2),
+                            color: GrayMedium,
+                            fontWeight: 'bold',
+                            fontSize: adjust(10),
+                            marginVertical: adjust(10),
                           }}>
-                          <Text
+                          Product Berhasil Dimasukan Ke Dalam Keranjang
+                        </Text>
+                        <View
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            // justifyContent: 'space-between',
+                          }}>
+                          <TouchableOpacity
+                            onPress={() => subClose()}
                             style={{
-                              color: 'red',
+                              flex: 1,
+                              borderWidth: 1,
+                              borderColor: 'red',
+                              padding: adjust(1),
+                              borderRadius: adjust(5),
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              marginRight: adjust(2),
+                            }}>
+                            <Text
+                              style={{
+                                color: 'red',
 
-                              fontSize: adjust(10),
-                              marginVertical: adjust(10),
-                            }}>
-                            Cencel
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => navigation.navigate('Keranjang')}
-                          style={{
-                            flex: 1,
-                            borderWidth: 1,
-                            borderColor: Green,
-                            padding: adjust(1),
-                            borderRadius: adjust(5),
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginLeft: adjust(2),
-                          }}>
-                          <Text
+                                fontSize: adjust(10),
+                                marginVertical: adjust(10),
+                              }}>
+                              Cencel
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate('Keranjang')}
                             style={{
-                              color: Green,
-                              fontSize: adjust(10),
-                              marginVertical: adjust(10),
+                              flex: 1,
+                              borderWidth: 1,
+                              borderColor: Green,
+                              padding: adjust(1),
+                              borderRadius: adjust(5),
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              marginLeft: adjust(2),
                             }}>
-                            Lihat Keranjang
-                          </Text>
-                        </TouchableOpacity>
+                            <Text
+                              style={{
+                                color: Green,
+                                fontSize: adjust(10),
+                                marginVertical: adjust(10),
+                              }}>
+                              Lihat Keranjang
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </View>
-                  );
-                }}
-              />
+                    );
+                  }}
+                />
 
+                <TouchableOpacity
+                  onPress={() => setModalVisible(!modalVisible)}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: 'red',
+                    borderRadius: adjust(5),
+                    marginTop: adjust(10),
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingVertical: adjust(5),
+                  }}>
+                  <Text
+                    style={{
+                      color: 'red',
+                      fontWeight: 'bold',
+                      fontSize: adjust(10),
+                    }}>
+                    Batalkan
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          <ModalPayProduct
+            props={{
+              visible: modalBuy,
+              setVisible: setModalBuy,
+              data: detailBarang.data,
+              token: token,
+              navigation: navigation,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              bottom: 0,
+            }}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={[
+                styles.buttonCheckout,
+                {
+                  borderTopLeftRadius: adjust(8),
+                  borderBottomLeftRadius: adjust(8),
+                  borderRightWidth: 1,
+                  borderRightColor: 'white',
+                },
+              ]}>
+              <Cart name="add-shopping-cart" size={24} color={'white'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('PersonalChat', {
+                  seller_id: detailBarang.data.provider_id,
+                })
+              }
+              style={styles.buttonCheckout}>
+              <Chat
+                name="ios-chatbubble-ellipses-outline"
+                size={24}
+                color={'white'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setModalBuy(true)}
+              style={[
+                styles.buttonCheckout,
+                {
+                  borderTopRightRadius: adjust(8),
+                  borderBottomRightRadius: adjust(8),
+                  borderRightWidth: 1,
+                  borderLeftColor: 'white',
+                },
+              ]}>
+              <Text style={styles.buttonTitle}> Pesan Sekarang</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <ModalComponent
+          ButtonCustoms={({open}) => {
+            return (
               <TouchableOpacity
-                onPress={close}
+                onPress={() => console.log(open())}
                 style={{
-                  borderWidth: 1,
-                  borderColor: 'red',
-                  borderRadius: adjust(5),
-                  marginTop: adjust(10),
+                  display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  paddingVertical: adjust(5),
+                  paddingVertical: adjust(10),
+                  backgroundColor: blueB2C,
+                  borderRadius: adjust(5),
+                }}>
+                <Text style={{color: 'white'}}> Pesan Sekarang 2</Text>
+              </TouchableOpacity>
+            );
+          }}
+          isTransparent={true}
+          ContainerStyleContent={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // backgroundColor: 'red',
+          }}
+          ContentCustoms={({close}) => {
+            return (
+              <View
+                style={{
+                  padding: adjust(10),
+                  backgroundColor: 'white',
+                  width: WidthScreen * 0.8,
+                  borderRadius: adjust(5),
                 }}>
                 <Text
                   style={{
-                    color: 'red',
+                    fontSize: adjust(12),
                     fontWeight: 'bold',
-                    fontSize: adjust(10),
+                    color: GrayMedium,
+                    marginBottom: adjust(10),
                   }}>
-                  Batalkan
+                  Login Untuk Mulai Berbelanja?
                 </Text>
-              </TouchableOpacity>
-            </View>
-          );
-        }}
-      />
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    onPress={close}
+                    style={{
+                      flex: 1,
+                      borderWidth: 1,
+                      borderColor: 'red',
+                      padding: adjust(5),
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginRight: adjust(2),
+                    }}>
+                    <Text style={{fontSize: adjust(10), color: 'red'}}>
+                      Cencel
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Account')}
+                    style={{
+                      flex: 1,
+                      backgroundColor: blueB2C,
+                      padding: adjust(5),
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginLeft: adjust(2),
+                    }}>
+                    <Text style={{fontSize: adjust(10), color: 'white'}}>
+                      Ke Menu Login
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          }}
+        />
+      )}
     </SafeAreaView>
-
-    // {/* </ScrollView> */}
-    // <Text>a</Text>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonCheckout: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: adjust(10),
+    backgroundColor: blueB2C,
+    // borderRadius: adjust(5),
+  },
+
+  buttonTitle: {
+    fontSize: adjust(13),
+    color: 'white',
+    fontWeight: '800',
+  },
+});
