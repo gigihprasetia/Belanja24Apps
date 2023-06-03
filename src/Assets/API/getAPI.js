@@ -1,6 +1,18 @@
 import {useSelector} from 'react-redux';
 import {API, API2} from './API';
 
+export const getBannerHero = async (token = '', callback) => {
+  await API2.get('/se-engine/feed/banner?attr=HERO', {
+    headers: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  })
+    .then(store => callback(store))
+    .catch(err => console.log(err));
+};
+
 export const getPopularProduct = async (token = '', slug, callback) => {
   await API.get('/guest-sys/fade/popular-product', {
     params: {provider_type: 'ECOMMERCE', preference_city: slug},

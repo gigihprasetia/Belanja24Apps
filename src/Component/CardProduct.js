@@ -53,11 +53,12 @@ const CardProduct = props => {
               justifyContent: 'space-between',
               marginTop: 5,
             }}>
+            {console.log(props.stock, 'stock')}
             <Text style={{fontSize: adjust(8), color: 'black'}}>
-              stock {props.stock}
+              Stock {props.stock === undefined ? 0 : props.stock}
             </Text>
             <Text style={{fontSize: adjust(8), color: 'black'}}>
-              terjual {props.sell}
+              {/* terjual {props.sell} */}
             </Text>
           </View>
         </View>

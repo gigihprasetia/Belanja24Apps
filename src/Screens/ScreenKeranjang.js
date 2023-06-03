@@ -255,6 +255,27 @@ const ScreenKeranjang = ({navigation}) => {
               Beli sekarang
             </Text>
           </TouchableOpacity>
+          {/* {console.log(navigation, 'navigation')} */}
+          <TouchableOpacity
+            onPress={() => navigation.push('stack')}
+            style={{
+              backgroundColor: blueB2C,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: adjust(10),
+              borderRadius: adjust(5),
+              marginTop: adjust(5),
+            }}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: adjust(10),
+                fontWeight: 'bold',
+              }}>
+              Kembali Belanja
+            </Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     )

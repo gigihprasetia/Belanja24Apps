@@ -162,6 +162,9 @@ const ScreenDetailToko = props => {
               {detailStore.data.city}
             </Text>
           </View>
+          {/* <View style={{
+            filter product
+          }}></View> */}
           <View style={{height: HeightScreen * 0.7, paddingHorizontal: 4}}>
             <FlatList
               data={detailProductStore.data}

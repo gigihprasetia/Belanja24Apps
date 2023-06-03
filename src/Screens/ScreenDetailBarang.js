@@ -955,11 +955,11 @@ export default function ScreenDetailBarang(props) {
                             // justifyContent: 'space-between',
                           }}>
                           <TouchableOpacity
-                            onPress={() => subClose()}
+                            onPress={() => navigation.navigate('stack')}
                             style={{
                               flex: 1,
                               borderWidth: 1,
-                              borderColor: 'red',
+                              borderColor: blueB2C,
                               padding: adjust(1),
                               borderRadius: adjust(5),
                               justifyContent: 'center',
@@ -968,12 +968,11 @@ export default function ScreenDetailBarang(props) {
                             }}>
                             <Text
                               style={{
-                                color: 'red',
-
+                                color: blueB2C,
                                 fontSize: adjust(10),
                                 marginVertical: adjust(10),
                               }}>
-                              Cencel
+                              Lanjut Belanja
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
@@ -1098,7 +1097,7 @@ export default function ScreenDetailBarang(props) {
                   backgroundColor: blueB2C,
                   borderRadius: adjust(5),
                 }}>
-                <Text style={{color: 'white'}}> Pesan Sekarang 2</Text>
+                <Text style={{color: 'white'}}> Pesan Sekarang</Text>
               </TouchableOpacity>
             );
           }}

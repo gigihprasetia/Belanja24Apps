@@ -40,10 +40,8 @@ import {postCityPreferenc} from '../Assets/API/postAPI';
 const ScreenDashboard = props => {
   const [dataProvinces, setDataProvinces] = useState([]);
   const [dataCity, setDataCity] = useState([]);
-  const [selectedValue, setSelectedValue] = React.useState(
-    'DAERAH ISTIMEWA YOGYAKARTA',
-  );
-  const [selectCity, setSelectCity] = useState('SLEMAN');
+  const [selectedValue, setSelectedValue] = React.useState('');
+  const [selectCity, setSelectCity] = useState('');
   const [dataPopular, setDataPopular] = useState({
     status: false,
     data: [],
@@ -301,7 +299,7 @@ const ScreenDashboard = props => {
               <Slider />
               <View style={{paddingHorizontal: adjust(5)}}>
                 {/* LINK BELANJA24 */}
-                <View>
+                {/* <View>
                   <Text
                     style={{
                       fontSize: adjust(11),
@@ -357,7 +355,7 @@ const ScreenDashboard = props => {
                       );
                     })}
                   </View>
-                </View>
+                </View> */}
                 {/* KATEGORI CONTENT */}
                 <View>
                   <Text
